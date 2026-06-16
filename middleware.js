@@ -33,12 +33,13 @@ async function verifyToken(token) {
 export default async function middleware(request) {
   const { pathname } = new URL(request.url)
   if (!pathname.startsWith('/ces-2026-analisi')) return
+  if (pathname === '/ces-2026-analisi/login') return
 
   const token = getCookie(request, 'ces_auth')
   const valid = await verifyToken(token)
 
   if (!valid) {
-    return Response.redirect(new URL('/login', request.url), 302)
+    return Response.redirect(new URL('/ces-2026-analisi/login', request.url), 302)
   }
 }
 

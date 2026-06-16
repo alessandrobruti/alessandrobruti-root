@@ -17,7 +17,7 @@ module.exports = async (req, res) => {
   const match = lengthsMatch && crypto.timingSafeEqual(safe, ref)
 
   if (!match) {
-    return res.redirect(302, '/login?error=1')
+    return res.redirect(302, '/ces-2026-analisi/login?error=1')
   }
 
   const token = crypto
