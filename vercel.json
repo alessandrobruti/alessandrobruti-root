@@ -6,9 +6,5 @@
         { "key": "X-Robots-Tag", "value": "noindex, nofollow" }
       ]
     }
-  ],
-  "rewrites": [
-    { "source": "/ces-2026-analisi", "destination": "https://ces2026-analisi.vercel.app" },
-    { "source": "/ces-2026-analisi/(.*)", "destination": "https://ces2026-analisi.vercel.app/$1" }
   ]
 }

@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CES 2026 — Analisi consolidata</title>
+<meta name="robots" content="noindex, nofollow">
+<style>
+:root{
+--paper:#F3F4F1;--ink:#15232C;--surface:#FFFFFF;--teal:#137A6F;--teal-d:#0E5B53;
+--signal:#C24B16;--amber:#A8730A;--muted:#5C6B72;--line:#E2E6E1;--grid:#ECEEE9;
+--pos:#137A6F;--neg:#C24B16;--chipbg:#EAF1EF;
+--mono:ui-monospace,"SF Mono","Cascadia Code",Menlo,Consolas,monospace;
+--sans:"Inter","Helvetica Neue",Arial,sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);
+font-size:15px;line-height:1.55;
+background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+background-size:26px 26px;background-position:-1px -1px;}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px 80px}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--teal-d);font-weight:600}
+header{padding:38px 0 22px;border-bottom:2px solid var(--ink)}
+h1{font-size:34px;line-height:1.05;margin:8px 0 6px;font-weight:800;letter-spacing:-.02em}
+.prov{font-family:var(--mono);font-size:12px;color:var(--muted);display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:10px}
+.prov b{color:var(--ink);font-weight:600}
+.cov{display:inline-flex;align-items:center;gap:6px;background:var(--chipbg);border:1px solid var(--line);
+padding:2px 9px;border-radius:2px;color:var(--teal-d);font-weight:600}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);margin:22px 0 6px}
+.kpi{background:var(--surface);padding:16px 16px 14px}
+.kpi .v{font-family:var(--mono);font-size:30px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1}
+.kpi .l{font-size:12.5px;color:var(--muted);margin-top:8px}
+.kpi .d{font-family:var(--mono);font-size:11px;margin-top:6px;font-weight:600}
+.kpi.pos .v{color:var(--teal-d)} .kpi.neg .v{color:var(--signal)}
+.d.pos{color:var(--teal-d)} .d.neg{color:var(--signal)}
+nav{position:sticky;top:0;z-index:10;background:var(--paper);display:flex;flex-wrap:wrap;gap:2px;
+border-bottom:1px solid var(--line);margin-top:26px;padding-top:6px}
+nav button{font-family:var(--mono);font-size:12px;letter-spacing:.04em;text-transform:uppercase;
+background:none;border:0;border-bottom:2px solid transparent;padding:11px 13px;color:var(--muted);cursor:pointer;font-weight:600}
+nav button:hover{color:var(--ink)} nav button.on{color:var(--ink);border-bottom-color:var(--teal)}
+section{display:none;padding-top:26px} section.on{display:block;animation:f .25s ease}
+@keyframes f{from{opacity:0;transform:translateY(4px)}to{opacity:1}}
+h2{font-size:13px;font-family:var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--teal-d);
+margin:0 0 4px;display:flex;align-items:center;gap:8px}
+h2::before{content:"";width:8px;height:8px;background:var(--teal);display:inline-block}
+.lead{font-size:18px;line-height:1.45;font-weight:600;margin:6px 0 22px;max-width:62ch;letter-spacing:-.01em}
+.note{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--teal);padding:13px 15px;margin:18px 0;font-size:14px;max-width:74ch}
+.note.warn{border-left-color:var(--signal)}
+.note .tag{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--teal-d);font-weight:700;display:block;margin-bottom:4px}
+.note.warn .tag{color:var(--signal)}
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line);margin:6px 0 8px}
+.card{background:var(--surface);padding:16px}
+.card .t{font-weight:700;font-size:15px;margin-bottom:5px;display:flex;gap:8px;align-items:baseline}
+.card .t .nx{font-family:var(--mono);color:var(--teal);font-size:12px;font-weight:700}
+.card.warn .t .nx{color:var(--signal)}
+.card p{margin:0;font-size:13.5px;color:#33424b}
+table{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0 4px}
+.scroll{overflow-x:auto;border:1px solid var(--line);background:var(--surface)}
+th,td{padding:8px 10px;text-align:right;border-bottom:1px solid var(--grid);white-space:nowrap}
+th{font-family:var(--mono);font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);
+font-weight:600;background:#FAFBF9;position:sticky;top:0;cursor:pointer;user-select:none}
+th:hover{color:var(--ink)}
+.sortar{color:var(--teal);font-size:9px;margin-left:2px}
+td:first-child,th:first-child{text-align:left}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums;font-weight:600}
+tr:hover td{background:#FAFCFB}
+.barcell{position:relative;min-width:150px}
+.bar{height:16px;background:var(--teal);display:inline-block;vertical-align:middle;border-radius:1px;opacity:.85}
+.bar.neg{background:var(--signal)}
+.barwrap{display:flex;align-items:center;gap:8px}
+.barwrap .num{min-width:34px}
+.track{flex:1;background:var(--grid);height:16px;border-radius:1px;position:relative;min-width:80px}
+.track .fill{position:absolute;left:0;top:0;height:100%;background:var(--teal);border-radius:1px}
+.track .fill.warn{background:var(--signal)} .track .seg{position:absolute;top:0;height:100%}
+.delta{font-family:var(--mono);font-weight:700;font-size:12px}
+.delta.pos{color:var(--teal-d)} .delta.neg{color:var(--signal)} .delta.flat{color:var(--muted)}
+.subtabs{display:flex;gap:2px;margin:4px 0 10px;flex-wrap:wrap}
+.subtabs button{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.04em;
+border:1px solid var(--line);background:var(--surface);padding:6px 11px;cursor:pointer;color:var(--muted);font-weight:600}
+.subtabs button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.toggle{font-family:var(--mono);font-size:11px;color:var(--muted);margin-left:auto;display:inline-flex;gap:6px;align-items:center}
+.toggle button{border:1px solid var(--line);background:var(--surface);padding:4px 9px;cursor:pointer;font-family:var(--mono);font-size:11px;color:var(--muted)}
+.toggle button.on{background:var(--teal);color:#fff;border-color:var(--teal)}
+.stk{display:flex;height:18px;width:100%;border-radius:1px;overflow:hidden;background:var(--grid)}
+.stk i{display:block;height:100%}
+.legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-family:var(--mono);font-size:11px;color:var(--muted);margin:6px 0 12px}
+.legend span{display:inline-flex;gap:5px;align-items:center} .legend b{width:10px;height:10px;display:inline-block;border-radius:1px}
+.mini{font-family:var(--mono);font-size:11px;color:var(--muted)}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:8px 0}
+.flag{font-family:var(--mono);font-size:11px;background:#FBEDE6;color:var(--signal);padding:1px 6px;border-radius:2px;font-weight:600}
+ul.rec{list-style:none;padding:0;margin:8px 0;counter-reset:r}
+ul.rec li{position:relative;padding:11px 12px 11px 44px;border:1px solid var(--line);background:var(--surface);margin-bottom:1px;font-size:14px}
+ul.rec li::before{counter-increment:r;content:counter(r,decimal-leading-zero);position:absolute;left:13px;top:11px;
+font-family:var(--mono);font-weight:700;color:var(--teal)}
+ul.rec li b{font-weight:700}
+.foot{margin-top:30px;padding-top:14px;border-top:1px solid var(--line);font-family:var(--mono);font-size:11px;color:var(--muted)}
+ul.lim{font-size:13px;color:#33424b;padding-left:18px} ul.lim li{margin:5px 0}
+@media(max-width:720px){.kpis{grid-template-columns:1fr 1fr}.cards,.split{grid-template-columns:1fr}h1{font-size:26px}}
+</style></head>
+<body><div class="wrap">
+<header>
+<div class="eyebrow">Impresoft Engage · Customer Engagement Summit</div>
+<h1>Analisi consolidata 2026</h1>
+<div class="prov">
+<span>Survey <b id="m_s"></b> risposte</span><span>Iscritti <b id="m_i"></b></span>
+<span>Confronto <b>edizione 2025</b> (71)</span>
+<span class="cov">● Copertura bacino <b id="m_c"></b></span>
+<span>Scala 1–4 · opinione 1–5</span>
+</div>
+<div class="kpis" id="kpis"></div>
+<div class="mini" style="margin-top:6px">Lettura: ogni metrica è calcolata sui dati caricati; dove il campione è sottile il commento lo segnala. Nessun dato è stimato o inferito.</div>
+</header>
+<nav id="nav"></nav>
+
+<section id="sintesi" class="on">
+<h2>Tesi</h2>
+<p class="lead">L'evento è solido e in lieve crescita, ma il limite strategico non è la qualità: è la composizione della sala. Si converte benissimo chi è prospect, solo che i prospect sono pochissimi.</p>
+<div class="cards" id="takeaways"></div>
+<div class="note"><span class="tag">Dato più solido</span>HubSpot e Zoho hanno invitato <b>zero lead</b> (rispettivamente 46 e 15 clienti): è un fatto censuario sugli inviti, non una stima. È l'apertura più difendibile in steering: alcune practice usano l'evento in pura retention, senza generare pipeline netta.</div>
+<h2 style="margin-top:26px">Raccomandazioni per impatto</h2>
+<ul class="rec" id="recs"></ul>
+</section>
+
+<section id="trend">
+<h2>Performance 2026 vs 2025</h2>
+<p class="lead">Il +0,07 di opinione è reale ma concentrato: nasce da Durata e Orari, le leve del nuovo format di plenaria. Il contenuto (Relatori, Temi, Plenaria) è piatto o in lieve flessione.</p>
+<div class="scroll"><table id="t_trend"></table></div>
+<div class="note"><span class="tag">Lettura</span>Feedback 2025 recepito: la plenaria a speech brevi con pausa ha alzato Durata (+0,16) e Orari (+0,11). Ma la soddisfazione non cresce sul contenuto e si diluisce con l'aumento dei numeri. <b>Ristorazione in calo (−0,13)</b> e workshop fermi al fondo (~3,0).</div>
+<div class="note warn"><span class="tag">Attenzione metodo</span>Il calo follow-up (45%→36%, −9pp) <b>non</b> è un peggioramento dell'evento: è composizione. Vedi sezione Cluster — tra i lead la conversione è 67%.</div>
+</section>
+
+<section id="workshop">
+<h2>Workshop pomeridiani — la debolezza strutturale</h2>
+<p class="lead">Voto più basso e invariato dal 2025 (~3,0). Il problema è di formato, non di una singola sessione: l'insoddisfazione è diffusa.</p>
+<div class="scroll"><table id="t_ws"></table></div>
+<div class="split">
+<div><div class="note"><span class="tag">Correlazione · cosa guida il giudizio</span><i>Quale</i> workshop si è seguito predice <b>debolmente</b> il giudizio complessivo (point-biserial |r|&lt;0,2, non significativo): nessun colpevole isolato. Decorrelati (debolezza isolata che non contagia il resto): <b id="dec"></b>.</div></div>
+<div><div class="note warn"><span class="tag">Mismatch di aspettativa</span>Solo il <b id="mm"></b>% dei workshop seguiti rientrava nelle preferenze dichiarate; appena il <b id="echo"></b>% degli iscritti ha seguito il workshop del proprio vendor. La scelta guidata della sessione è validata dai dati.</div></div>
+</div>
+<h2 style="margin-top:22px">Profilo degli estremi</h2>
+<p class="mini">Quota di ciascun gruppo (giudizio complessivo workshop = Eccellente vs ≤Discreto) che ha seguito la sessione. Positivi gravitano sullo strategico, negativi sul tool.</p>
+<div class="scroll"><table id="t_ext"></table></div>
+</section>
+
+<section id="cluster">
+<h2>Performance per cluster</h2>
+<p class="lead">Soddisfazione alta ovunque; la conversione dipende da ruolo e lifecycle, non da quanto è piaciuto. Letta sempre col tasso di risposta del bacino.</p>
+<div class="subtabs" id="clsub"></div>
+<div class="scroll"><table id="t_cl"></table></div>
+<div class="legend"><span><b style="background:var(--teal)"></b>esperienza / opinione</span><span><b style="background:var(--signal)"></b>criticità (ristorazione bassa)</span><span class="flag">Cop&lt;40%</span> bassa affidabilità del campione</div>
+<div class="note" id="cl_note"></div>
+</section>
+
+<section id="funnel">
+<h2>Funnel per practice — invitati → partecipanti → conversione</h2>
+<p class="lead">Due archetipi: practice di acquisizione (forSales, SugarAI) vs practice di sola retention (HubSpot, Zoho). I prospect convertono ovunque, ma il collo di bottiglia è chi viene invitato.</p>
+<h2 style="font-size:11px;margin-top:6px">Mix invitati per lifecycle</h2>
+<div class="legend" id="inv_leg"></div>
+<div class="scroll"><table id="t_inv"></table></div>
+<h2 style="margin-top:22px">Conversione di presenza e follow-up</h2>
+<div class="scroll"><table id="t_fn"></table></div>
+<div class="note"><span class="tag">Lettura</span><b>HubSpot</b> 0 lead invitati e maggior drop-off di presenza (52→40). <b>SugarAI</b> concentra 7 delle 18 opportunity totali (motore mid-funnel). <b>forSales</b> presenza 100% e miglior conversione (lead 3/4, clienti 6/14). Spostare anche solo 20–30 inviti da "cliente abituale" a "prospect netto" avrebbe impatto sproporzionato sulla pipeline.</div>
+</section>
+
+<section id="metodo">
+<h2>Metodologia e qualità del dato</h2>
+<div class="note"><span class="tag">Come sono calcolati i numeri</span>Scala ordinale convertita (Scadente 1 · Discreto 2 · Buono 3 · Eccellente 4); "Non ho partecipato" escluso. Opinione 1–5. Indice esperienza = media delle 9 dimensioni strutturali, <b>escluso il workshop</b> (analizzato a parte). Join survey↔iscritti su nome+cognome normalizzato.</div>
+<div class="note warn"><span class="tag">Anomalie rilevate e gestite</span>① Edizione 2025: colonna <i>Open bar</i> (assente nel 2026) sfasava i campi da Relatori in poi — corretta prima del confronto. ② <b id="anom"></b> rispondenti hanno valutato &gt;3 workshop (max 3 slot paralleli), <b id="anom12"></b> tutti e 12: sessioni non frequentate → analisi workshop sul set "partecipanti reali" (≤3, n=<b id="clean"></b>). ③ "Partecipante" è proxy (≥1 workshop seguito o risposta survey): sotto-conta i solo-plenaria non rispondenti; <i>Disdetta</i> vuota → no-show indistinguibili.</div>
+<h2 style="margin-top:22px">Limiti</h2>
+<ul class="lim">
+<li>Copertura media 46%: anche i cluster grandi parlano per circa metà del bacino; possibile bias di non-risposta (i meno ingaggiati rispondono meno — rilevante per Direzione, copertura 33%, e opportunity-lost, 20%).</li>
+<li>Cluster con N=1–9 (Innovation, Customer Service, opportunity, regioni minori): tassi indicativi, non conclusivi → in steering usare i numeri assoluti, non le percentuali.</li>
+<li>Confronto 2025 su dataset di dimensione diversa (71 vs 126); i talk differiscono tra edizioni, quindi il confronto è solo sulle dimensioni strutturali.</li>
+<li>2 rispondenti survey non agganciati al DB iscritti.</li>
+</ul>
+<div class="foot">Generato dai due file caricati (survey CES26 + DB iscritti) e dal dataset 2025. Tutti i valori derivano dal calcolo diretto sui dati; nessuna stima.</div>
+</section>
+</div>
+<script>
+const DATA={"meta": {"survey": 126, "iscritti": 268, "matched": 124, "cov": 46, "clean": 115, "anom": 11, "anom12": 5}, "kpi": [{"v": "4.59", "l": "Opinione media (1–5)", "d": "+0.07 vs 2025", "tone": "pos"}, {"v": "36%", "l": "Vogliono follow-up", "d": "-9pp vs 2025", "tone": "neg"}, {"v": "74%", "l": "Sala = clienti esistenti", "d": "26 lead netti su 268", "tone": "neg"}, {"v": "3,0", "l": "Voto workshop (su 4)", "d": "dimensione più debole", "tone": "neg"}], "trend": [{"dim": "Opinione generale", "y25": 4.52, "y26": 4.59, "scale": 5}, {"dim": "Parcheggio", "y25": 3.31, "y26": 3.29, "scale": 4}, {"dim": "Location", "y25": 3.79, "y26": 3.76, "scale": 4}, {"dim": "Orari", "y25": 3.55, "y26": 3.66, "scale": 4}, {"dim": "Durata", "y25": 3.42, "y26": 3.58, "scale": 4}, {"dim": "Ristorazione", "y25": 3.34, "y26": 3.21, "scale": 4}, {"dim": "Relatori", "y25": 3.61, "y26": 3.51, "scale": 4}, {"dim": "Plenaria", "y25": 3.68, "y26": 3.63, "scale": 4}, {"dim": "Workshop", "y25": 3.04, "y26": 3.02, "scale": 4}, {"dim": "Temi", "y25": 3.68, "y26": 3.56, "scale": 4}, {"dim": "Pre-evento", "y25": 3.58, "y26": 3.55, "scale": 4}, {"dim": "richiesta di follow-up", "y25": 2.25, "y26": 1.7857142857142858, "scale": 5, "pct": true, "p25": 45, "p26": 36}], "ws": [{"name": "Uniters CX", "n": 16, "media": 3.31, "ecc": 50, "neg": 12}, {"name": "RevOps", "n": 31, "media": 3.23, "ecc": 42, "neg": 19}, {"name": "B2B Sales", "n": 28, "media": 3.21, "ecc": 50, "neg": 29}, {"name": "HubSpot AEO", "n": 28, "media": 3.18, "ecc": 29, "neg": 11}, {"name": "PIM/CPQ/AEO", "n": 12, "media": 3.08, "ecc": 25, "neg": 17}, {"name": "MS Copilot", "n": 41, "media": 2.98, "ecc": 29, "neg": 29}, {"name": "Amaltia", "n": 23, "media": 2.96, "ecc": 17, "neg": 22}, {"name": "SugarAI", "n": 23, "media": 2.87, "ecc": 17, "neg": 30}, {"name": "Zoho Zia", "n": 12, "media": 2.83, "ecc": 25, "neg": 33}, {"name": "Agentforce", "n": 21, "media": 2.81, "ecc": 10, "neg": 29}, {"name": "mainsim", "n": 10, "media": 2.6, "ecc": 20, "neg": 60}, {"name": "monday.com", "n": 24, "media": 2.38, "ecc": 4, "neg": 50}], "ws_dec": ["Agentforce", "monday.com", "PIM/CPQ/AEO"], "ws_extremes": {"npos": 28, "nneg": 24, "pos": {"B2B Sales": 43, "SugarAI": 18, "HubSpot AEO": 18, "Agentforce": 11, "MS Copilot": 32, "Amaltia": 21, "mainsim": 7, "Uniters CX": 21, "RevOps": 36, "monday.com": 18, "Zoho Zia": 4, "PIM/CPQ/AEO": 14}, "neg": {"B2B Sales": 21, "SugarAI": 17, "HubSpot AEO": 12, "Agentforce": 21, "MS Copilot": 38, "Amaltia": 8, "mainsim": 12, "Uniters CX": 8, "RevOps": 21, "monday.com": 25, "Zoho Zia": 8, "PIM/CPQ/AEO": 12}}, "mismatch": {"inpref": 61, "n": 80}, "echo": 45, "cl": {"lifecycle": [{"name": "cliente", "inv": 197, "risp": 92, "cov": 47, "opin": 4.53, "rist": 3.17, "relat": 3.49, "temi": 3.53, "esp": 3.52, "leadp": 35, "leadn": 32}, {"name": "lead", "inv": 26, "risp": 15, "cov": 58, "opin": 4.93, "rist": 3.47, "relat": 3.67, "temi": 3.67, "esp": 3.61, "leadp": 67, "leadn": 10}, {"name": "opportunity", "inv": 18, "risp": 7, "cov": 39, "opin": 4.71, "rist": 2.86, "relat": 3.57, "temi": 3.71, "esp": 3.57, "leadp": 29, "leadn": 2}, {"name": "partner", "inv": 14, "risp": 6, "cov": 43, "opin": 5.0, "rist": 3.67, "relat": 3.5, "temi": 3.5, "esp": 3.41, "leadp": 17, "leadn": 1}, {"name": "opp.lost", "inv": 10, "risp": 2, "cov": 20, "opin": 4.0, "rist": 3.0, "relat": 3.0, "temi": 3.5, "esp": 3.28, "leadp": 0, "leadn": 0}], "practice": [{"name": "sugarai", "inv": 60, "risp": 24, "cov": 40, "opin": 4.71, "rist": 3.38, "relat": 3.58, "temi": 3.62, "esp": 3.62, "leadp": 42, "leadn": 10}, {"name": "hubspot", "inv": 52, "risp": 22, "cov": 42, "opin": 4.55, "rist": 3.23, "relat": 3.41, "temi": 3.5, "esp": 3.52, "leadp": 27, "leadn": 6}, {"name": "microsoft", "inv": 35, "risp": 18, "cov": 51, "opin": 4.5, "rist": 2.83, "relat": 3.61, "temi": 3.61, "esp": 3.46, "leadp": 22, "leadn": 4}, {"name": "forsales", "inv": 33, "risp": 18, "cov": 55, "opin": 4.67, "rist": 3.22, "relat": 3.61, "temi": 3.44, "esp": 3.59, "leadp": 50, "leadn": 9}, {"name": "cx", "inv": 17, "risp": 9, "cov": 53, "opin": 4.33, "rist": 2.89, "relat": 3.0, "temi": 3.44, "esp": 3.42, "leadp": 33, "leadn": 3}, {"name": "salesforce", "inv": 17, "risp": 10, "cov": 59, "opin": 4.6, "rist": 3.3, "relat": 3.6, "temi": 3.7, "esp": 3.53, "leadp": 30, "leadn": 3}, {"name": "monday", "inv": 15, "risp": 7, "cov": 47, "opin": 4.43, "rist": 3.57, "relat": 3.57, "temi": 3.71, "esp": 3.54, "leadp": 43, "leadn": 3}, {"name": "zoho", "inv": 15, "risp": 5, "cov": 33, "opin": 4.6, "rist": 2.8, "relat": 3.4, "temi": 3.6, "esp": 3.42, "leadp": 40, "leadn": 2}, {"name": "partner", "inv": 14, "risp": 6, "cov": 43, "opin": 5.0, "rist": 3.67, "relat": 3.5, "temi": 3.5, "esp": 3.41, "leadp": 17, "leadn": 1}, {"name": "lead", "inv": 9, "risp": 5, "cov": 56, "opin": 5.0, "rist": 3.6, "relat": 3.8, "temi": 3.6, "esp": 3.62, "leadp": 80, "leadn": 4}], "area": [{"name": "Marketing", "inv": 62, "risp": 27, "cov": 44, "opin": 4.56, "rist": 3.26, "relat": 3.56, "temi": 3.41, "esp": 3.53, "leadp": 30, "leadn": 8}, {"name": "ICT", "inv": 54, "risp": 28, "cov": 52, "opin": 4.5, "rist": 3.25, "relat": 3.57, "temi": 3.64, "esp": 3.62, "leadp": 36, "leadn": 10}, {"name": "Direzione", "inv": 33, "risp": 11, "cov": 33, "opin": 4.73, "rist": 3.09, "relat": 3.73, "temi": 3.73, "esp": 3.51, "leadp": 18, "leadn": 2}, {"name": "Sales", "inv": 26, "risp": 11, "cov": 42, "opin": 4.73, "rist": 3.09, "relat": 3.64, "temi": 3.55, "esp": 3.52, "leadp": 36, "leadn": 4}, {"name": "Digital", "inv": 21, "risp": 11, "cov": 52, "opin": 4.73, "rist": 3.18, "relat": 3.45, "temi": 3.73, "esp": 3.53, "leadp": 55, "leadn": 6}, {"name": "Innovation", "inv": 9, "risp": 2, "cov": 22, "opin": 5.0, "rist": 4.0, "relat": 3.5, "temi": 3.5, "esp": 3.72, "leadp": 100, "leadn": 2}, {"name": "Customer Service", "inv": 8, "risp": 5, "cov": 62, "opin": 4.8, "rist": 3.2, "relat": 3.4, "temi": 3.2, "esp": 3.58, "leadp": 80, "leadn": 4}, {"name": "Altro", "inv": 7, "risp": 4, "cov": 57, "opin": 5.0, "rist": 3.5, "relat": 3.75, "temi": 3.5, "esp": 3.39, "leadp": 0, "leadn": 0}], "geo": [{"name": "Veneto", "inv": 159, "risp": 75, "cov": 47, "opin": 4.6, "rist": 3.17, "relat": 3.47, "temi": 3.52, "esp": 3.52, "leadp": 32, "leadn": 24}, {"name": "Lombardia", "inv": 33, "risp": 16, "cov": 48, "opin": 4.62, "rist": 3.06, "relat": 3.56, "temi": 3.62, "esp": 3.57, "leadp": 44, "leadn": 7}, {"name": "Emilia-Romagna", "inv": 9, "risp": 4, "cov": 44, "opin": 4.75, "rist": 3.0, "relat": 3.75, "temi": 3.75, "esp": 3.44, "leadp": 25, "leadn": 1}, {"name": "Piemonte", "inv": 7, "risp": 4, "cov": 57, "opin": 4.75, "rist": 4.0, "relat": 4.0, "temi": 3.75, "esp": 3.81, "leadp": 75, "leadn": 3}, {"name": "Trentino-Alto Adige/Südtirol", "inv": 7, "risp": 4, "cov": 57, "opin": 4.25, "rist": 3.5, "relat": 3.5, "temi": 3.0, "esp": 3.47, "leadp": 25, "leadn": 1}]}, "inv_cols": ["cliente", "lead", "opportunity", "partner", "opp.lost", "cust.lost"], "invites": [{"practice": "sugarai", "tot": 60, "cliente": 47, "lead": 4, "opportunity": 7, "partner": 0, "opp.lost": 2, "cust.lost": 0}, {"practice": "hubspot", "tot": 52, "cliente": 46, "lead": 0, "opportunity": 4, "partner": 0, "opp.lost": 1, "cust.lost": 1}, {"practice": "microsoft", "tot": 35, "cliente": 29, "lead": 1, "opportunity": 1, "partner": 0, "opp.lost": 4, "cust.lost": 0}, {"practice": "forsales", "tot": 33, "cliente": 25, "lead": 5, "opportunity": 3, "partner": 0, "opp.lost": 0, "cust.lost": 0}, {"practice": "cx", "tot": 17, "cliente": 13, "lead": 4, "opportunity": 0, "partner": 0, "opp.lost": 0, "cust.lost": 0}, {"practice": "salesforce", "tot": 17, "cliente": 12, "lead": 1, "opportunity": 0, "partner": 0, "opp.lost": 2, "cust.lost": 2}, {"practice": "zoho", "tot": 15, "cliente": 15, "lead": 0, "opportunity": 0, "partner": 0, "opp.lost": 0, "cust.lost": 0}, {"practice": "monday", "tot": 15, "cliente": 10, "lead": 2, "opportunity": 3, "partner": 0, "opp.lost": 0, "cust.lost": 0}, {"practice": "partner", "tot": 14, "cliente": 0, "lead": 0, "opportunity": 0, "partner": 14, "opp.lost": 0, "cust.lost": 0}, {"practice": "lead", "tot": 9, "cliente": 0, "lead": 9, "opportunity": 0, "partner": 0, "opp.lost": 0, "cust.lost": 0}], "funnel": [{"practice": "sugarai", "inv": 60, "part": 54, "risp": 24, "pp": 90, "opin": 4.71, "leadn": 10}, {"practice": "hubspot", "inv": 52, "part": 40, "risp": 22, "pp": 77, "opin": 4.55, "leadn": 6}, {"practice": "microsoft", "inv": 35, "part": 32, "risp": 18, "pp": 91, "opin": 4.5, "leadn": 4}, {"practice": "forsales", "inv": 33, "part": 33, "risp": 18, "pp": 100, "opin": 4.67, "leadn": 9}, {"practice": "cx", "inv": 17, "part": 14, "risp": 9, "pp": 82, "opin": 4.33, "leadn": 3}, {"practice": "salesforce", "inv": 17, "part": 14, "risp": 10, "pp": 82, "opin": 4.6, "leadn": 3}, {"practice": "zoho", "inv": 15, "part": 12, "risp": 5, "pp": 80, "opin": 4.6, "leadn": 2}, {"practice": "monday", "inv": 15, "part": 10, "risp": 7, "pp": 67, "opin": 4.43, "leadn": 3}, {"practice": "partner", "inv": 14, "part": 9, "risp": 6, "pp": 64, "opin": 5.0, "leadn": 1}, {"practice": "lead", "inv": 9, "part": 6, "risp": 5, "pp": 67, "opin": 5.0, "leadn": 4}]};
+const $=s=>document.querySelector(s);
+const fmt=x=>x==null?'–':(typeof x==='number'?x.toFixed(2).replace('.',','):x);
+// header
+$('#m_s').textContent=DATA.meta.survey;$('#m_i').textContent=DATA.meta.iscritti;$('#m_c').textContent=DATA.meta.cov+'%';
+$('#anom').textContent=DATA.meta.anom;$('#anom12').textContent=DATA.meta.anom12;$('#clean').textContent=DATA.meta.clean;
+$('#dec').textContent=DATA.ws_dec.join(', ');$('#mm').textContent=DATA.mismatch.inpref;$('#echo').textContent=DATA.echo;
+// kpis
+$('#kpis').innerHTML=DATA.kpi.map(k=>`<div class="kpi ${k.tone}"><div class="v">${k.v}</div><div class="l">${k.l}</div><div class="d ${k.tone}">${k.d}</div></div>`).join('');
+// nav
+const SEC=[['sintesi','Sintesi'],['trend','Trend 25→26'],['workshop','Workshop'],['cluster','Cluster'],['funnel','Funnel practice'],['metodo','Metodo & limiti']];
+$('#nav').innerHTML=SEC.map((s,i)=>`<button data-s="${s[0]}" class="${i==0?'on':''}">${s[1]}</button>`).join('');
+$('#nav').onclick=e=>{const b=e.target.closest('button');if(!b)return;
+document.querySelectorAll('nav button').forEach(x=>x.classList.remove('on'));b.classList.add('on');
+document.querySelectorAll('section').forEach(x=>x.classList.remove('on'));$('#'+b.dataset.s).classList.add('on');window.scrollTo(0,0);};
+// takeaways
+const TK=[
+ ['pos','01','Format plenaria validato','Il nuovo format a speech brevi con pausa ha alzato Durata e Orari: è l\'unico miglioramento netto vs 2025. Da consolidare.'],
+ ['warn','02','Workshop fermi al fondo','Voto ~3,0 invariato dal 2025, formato "pitch di prodotto". monday.com (2,38) e Agentforce (2,81) i peggiori; richiesta costante di casi reali.'],
+ ['warn','03','Sala = base installata','74% clienti, solo 26 lead netti su 267. L\'evento è una macchina di conversione sotto-alimentata di prospect.'],
+ ['pos','04','I prospect convertono','I lead sono i più soddisfatti (4,93) e chiedono follow-up al 67%. Il segnale è robusto (copertura 58%): il problema è quanti ne invitiamo.'],
+];
+$('#takeaways').innerHTML=TK.map(t=>`<div class="card ${t[0]=='warn'?'warn':''}"><div class="t"><span class="nx">${t[1]}</span>${t[2]}</div><p>${t[3]}</p></div>`).join('');
+// recs
+const RC=['<b>Riempire la sala di prospect netti</b>: target esplicito di lead per ogni practice. Converte al 67% ma sono solo 26 vs 197 clienti.',
+'<b>Redesign dei 3 workshop headline che deludono</b> (Agentforce, MS Copilot, monday.com): massimo pubblico × minima resa.',
+'<b>Scelta guidata del workshop</b>: ~40% di partecipazioni fuori-preferenza alimenta il mismatch; protegge la soddisfazione a costo nullo.',
+'<b>Scalare ristorazione e spazi</b> all\'affluenza reale, o limitare gli inviti: unica debolezza trasversale a tutti i cluster, in peggioramento.',
+'<b>Riattivare HubSpot e Microsoft</b>: basi grandi, fredde, sotto-monetizzate; rivedere la proposta di valore, non trattarle come pipeline calda.',
+'<b>Follow-up segmentato</b>: prioritizzare per volume assoluto (ICT, Marketing, base clienti); affilare il messaggio dove il tasso è alto (Customer Service, Digital, forSales).'];
+$('#recs').innerHTML=RC.map(r=>`<li>${r}</li>`).join('');
+// trend table
+function track(v,scale,warn){const p=Math.round(v/scale*100);return `<div class="track"><div class="fill ${warn?'warn':''}" style="width:${p}%"></div></div>`;}
+$('#t_trend').innerHTML='<thead><tr><th>Dimensione</th><th>2025</th><th>2026</th><th>Δ</th><th>2026 (barra)</th></tr></thead><tbody>'+
+DATA.trend.map(r=>{const d=r.y26-r.y25;const cls=Math.abs(d)<0.03?'flat':(d>0?'pos':'neg');
+ const v25=r.pct?r.p25+'%':fmt(r.y25),v26=r.pct?r.p26+'%':fmt(r.y26);
+ const dd=r.pct?((r.p26-r.p25)+'pp'):(d>0?'+':'')+d.toFixed(2).replace('.',',');
+ const warn=r.dim=='Ristorazione'||r.dim=='Workshop';
+ return `<tr><td>${r.dim}</td><td class="num">${v25}</td><td class="num">${v26}</td><td class="delta ${cls}">${dd}</td><td class="barcell">${track(r.y26,r.scale,warn)}</td></tr>`}).join('')+'</tbody>';
+// workshop table
+$('#t_ws').innerHTML='<thead><tr><th>Workshop</th><th>N</th><th>Media /4</th><th>%Ecc</th><th>%Neg</th><th>Resa</th></tr></thead><tbody>'+
+DATA.ws.map(w=>{const warn=w.media<3;return `<tr><td>${w.name}</td><td class="num">${w.n}</td><td class="num">${fmt(w.media)}</td><td class="num">${w.ecc}%</td><td class="num" style="color:${w.neg>=30?'var(--signal)':'inherit'}">${w.neg}%</td><td class="barcell">${track(w.media,4,warn)}</td></tr>`}).join('')+'</tbody>';
+// extremes
+const order=DATA.ws.map(w=>w.name);
+$('#t_ext').innerHTML=`<thead><tr><th>Workshop</th><th>Positivi (n=${DATA.ws_extremes.npos})</th><th>Negativi (n=${DATA.ws_extremes.nneg})</th><th>Lean</th></tr></thead><tbody>`+
+order.map(n=>{const p=DATA.ws_extremes.pos[n]||0,g=DATA.ws_extremes.neg[n]||0,l=g-p;
+ const t=l<=-8?'pos':(l>=8?'neg':'flat');const lbl=l<=-8?'positivo':(l>=8?'negativo':'neutro');
+ return `<tr><td>${n}</td><td class="num">${p}%</td><td class="num">${g}%</td><td class="delta ${t}">${lbl}</td></tr>`}).join('')+'</tbody>';
+// clusters
+const CL=[['lifecycle','Lifecycle'],['practice','Practice'],['area','Company area'],['geo','Provenienza']];
+$('#clsub').innerHTML=CL.map((c,i)=>`<button data-c="${c[0]}" class="${i==0?'on':''}">${c[1]}</button>`).join('')+
+ '<span class="toggle">Lead-gen: <button id="tg_p" class="on">tasso %</button><button id="tg_n">assoluto</button></span>';
+let curCL='lifecycle',leadMode='p';
+function renderCL(){const rows=DATA.cl[curCL];
+ $('#t_cl').innerHTML='<thead><tr><th>Cluster</th><th>Inv.</th><th>Risp.</th><th>Cop.</th><th>Opin /5</th><th>Esp /4</th><th>Ristor</th><th>Relat</th><th>Temi</th><th>Lead</th></tr></thead><tbody>'+
+ rows.map(r=>{const low=r.cov<40;const ld=leadMode=='p'?(r.leadp==null?'–':r.leadp+'%'):r.leadn;
+  const ldbar=r.leadp==null?'':`<div class="track" style="max-width:60px;display:inline-block;vertical-align:middle"><div class="fill" style="width:${r.leadp}%"></div></div>`;
+  return `<tr><td>${r.name} ${low?'<span class="flag">cop '+r.cov+'%</span>':''}</td><td class="num">${r.inv}</td><td class="num">${r.risp}</td><td class="num">${r.cov}%</td>
+  <td class="num">${fmt(r.opin)}</td><td class="num">${fmt(r.esp)}</td>
+  <td class="num" style="color:${r.rist!=null&&r.rist<3?'var(--signal)':'inherit'}">${fmt(r.rist)}</td>
+  <td class="num">${fmt(r.relat)}</td><td class="num">${fmt(r.temi)}</td>
+  <td class="num">${ld} ${ldbar} <span class="mini">(${r.leadn})</span></td></tr>`}).join('')+'</tbody>';}
+const CLNOTE={lifecycle:'<span class="tag">Lettura</span>I <b>lead</b> primeggiano (opinione 4,93, conversione 67%, copertura 58%): segnale robusto. La <b>Direzione</b> "non converte" ma su copertura 33% e 2 sì assoluti — la non-risposta dei decisori è essa stessa un dato. <b>opportunity-lost</b> quasi muto (cop 20%): blind spot sui deal persi.',
+ practice:'<span class="tag">Lettura</span><b>SugarAI</b> e <b>forSales</b> leader (soddisfazione + conversione 42–50%). <b>Microsoft</b> (conv 22%) e <b>HubSpot</b> (27%) grandi ma freddi. <b>CX</b> il più critico sul contenuto (Relatori 3,00). Ristorazione debole per Microsoft/Zoho.',
+ area:'<span class="tag">Lettura</span><b>Direzione/Sales/Digital</b> danno l\'opinione più alta (4,73), ma la Direzione penalizza il Parcheggio (2,82) e non converte (scouting). <b>Customer Service e Digital</b> convertono di più; in assoluto la pipeline la fanno <b>ICT (10) e Marketing (8)</b> per massa del bacino.',
+ geo:'<span class="tag">Lettura</span>Evento iper-locale (Veneto 60%). Il fuori-regione (Lombardia) converte meglio in tasso (44% vs 32%): viaggiare implica intento più alto. Le regioni minori hanno 4 risposte: solo indicative.'};
+function setNote(){$('#cl_note').className='note'+(curCL=='lifecycle'||curCL=='practice'?'':'');$('#cl_note').innerHTML=CLNOTE[curCL];}
+$('#clsub').onclick=e=>{const b=e.target.closest('button');if(!b)return;
+ if(b.dataset.c){document.querySelectorAll('#clsub button[data-c]').forEach(x=>x.classList.remove('on'));b.classList.add('on');curCL=b.dataset.c;renderCL();setNote();}
+ if(b.id=='tg_p'||b.id=='tg_n'){$('#tg_p').classList.toggle('on',b.id=='tg_p');$('#tg_n').classList.toggle('on',b.id=='tg_n');leadMode=b.id=='tg_p'?'p':'n';renderCL();}};
+renderCL();setNote();
+// invites stacked
+const LCC={cliente:'#9FB7BD',lead:'#137A6F','opportunity':'#1FA89B',partner:'#C9D3CF','opp.lost':'#E0A48C','cust.lost':'#C24B16'};
+$('#inv_leg').innerHTML=DATA.inv_cols.map(c=>`<span><b style="background:${LCC[c]||'#ccc'}"></b>${c}</span>`).join('');
+const maxTot=Math.max(...DATA.invites.map(r=>r.tot));
+$('#t_inv').innerHTML='<thead><tr><th>Practice</th><th>Tot</th>'+DATA.inv_cols.map(c=>`<th>${c}</th>`).join('')+'<th>Mix</th></tr></thead><tbody>'+
+DATA.invites.map(r=>{const seg=DATA.inv_cols.map(c=>r[c]?`<i style="width:${r[c]/r.tot*100}%;background:${LCC[c]}"></i>`:'').join('');
+ return `<tr><td>${r.practice}</td><td class="num">${r.tot}</td>`+DATA.inv_cols.map(c=>`<td class="num" style="${c=='lead'&&r[c]>0?'color:var(--teal-d);font-weight:700':''}">${r[c]||'·'}</td>`).join('')+
+ `<td style="min-width:140px"><div class="stk" style="width:${Math.max(40,r.tot/maxTot*100)}%">${seg}</div></td></tr>`}).join('')+'</tbody>';
+// funnel
+$('#t_fn').innerHTML='<thead><tr><th>Practice</th><th>Invitati</th><th>Partecip.</th><th>Risp.</th><th>%Presenza</th><th>Opin /5</th><th>Lead "Sì" (n)</th></tr></thead><tbody>'+
+DATA.funnel.map(f=>`<tr><td>${f.practice}</td><td class="num">${f.inv}</td><td class="num">${f.part}</td><td class="num">${f.risp}</td>
+ <td class="barcell"><div class="barwrap"><span class="num">${f.pp}%</span><div class="track"><div class="fill" style="width:${f.pp}%"></div></div></div></td>
+ <td class="num">${fmt(f.opin)}</td><td class="num" style="color:${f.leadn>=8?'var(--teal-d)':'inherit'};font-weight:700">${f.leadn}</td></tr>`).join('')+'</tbody>';
+// ordinamento colonne (click: crescente / decrescente)
+function cellNum(td){const t=(td.textContent||'').replace(/−/g,'-');const m=t.match(/-?\d+(?:[.,]\d+)?/);return m?parseFloat(m[0].replace(',','.')):null;}
+document.addEventListener('click',function(e){
+ const th=e.target.closest('th');if(!th)return;const table=th.closest('table');if(!table)return;
+ const tb=table.querySelector('tbody');if(!tb)return;
+ const ths=[...th.parentNode.children];const idx=ths.indexOf(th);
+ const dir=th.getAttribute('data-dir')==='asc'?'desc':'asc';
+ ths.forEach(x=>{x.removeAttribute('data-dir');const a=x.querySelector('.sortar');if(a)a.remove();});
+ th.setAttribute('data-dir',dir);
+ const rows=[...tb.querySelectorAll('tr')];
+ rows.sort((a,b)=>{const A=a.children[idx],B=b.children[idx];if(!A||!B)return 0;
+   const na=cellNum(A),nb=cellNum(B);let r;
+   if(na!=null&&nb!=null)r=na-nb;
+   else r=(A.textContent||'').trim().localeCompare((B.textContent||'').trim(),'it');
+   return dir==='asc'?r:-r;});
+ rows.forEach(r=>tb.appendChild(r));
+ const ar=document.createElement('span');ar.className='sortar';ar.textContent=dir==='asc'?'▲':'▼';th.appendChild(ar);
+});
+</script></body></html>
