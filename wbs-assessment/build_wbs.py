@@ -2,6 +2,11 @@
 """
 Costruisce il file WBS del progetto di Assessment Go-to-Market.
 Tutti i calcoli sono formule Excel vive: il file si ricalcola all'apertura.
+
+Identità visiva: Impresoft Brand Manual & Corporate Guidelines (agg. 27.04.2023),
+ricetta Excel di references/office-docs.md. Palette di tre colori — giallo
+istituzionale, nero, bianco — più grigi puri derivati dal nero. Nessun colore
+semantico: gli stati sono codificati con forma, peso e scala monocroma.
 """
 from openpyxl import Workbook
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
@@ -12,70 +17,110 @@ from openpyxl.comments import Comment
 
 OUT = "/home/user/alessandrobruti-root/wbs-assessment/WBS_Assessment_GTM.xlsx"
 
-# ---------------------------------------------------------------- stile
-FONT = "Arial"
-C_DARK   = "1F3B57"   # blu scuro intestazioni
-C_MID    = "DCE6EF"   # azzurro chiaro fasce
-C_INPUT  = "FFF2CC"   # giallo: celle da compilare
-C_CALC   = "F2F2F2"   # grigio: celle calcolate
-C_CLIENT = "2E75B6"   # barra Gantt fase cliente
-C_PAR    = "ED7D31"   # barra Gantt blocco parallelo
-C_INT    = "7F7F7F"   # barra Gantt fase interna
-C_TOT    = "1F3B57"
+# ---------------------------------------------------------------- brand
+# Font istituzionale. Se Manrope non è installato sulle macchine che aprono
+# il file, sostituire con "Arial" (fallback indicato dal manuale).
+FONT = "Manrope"
 
-F_TITLE  = Font(name=FONT, size=14, bold=True, color="FFFFFF")
-F_SUB    = Font(name=FONT, size=9, italic=True, color="595959")
-F_HEAD   = Font(name=FONT, size=9, bold=True, color="FFFFFF")
-F_BODY   = Font(name=FONT, size=9)
-F_BODYB  = Font(name=FONT, size=9, bold=True)
-F_INPUT  = Font(name=FONT, size=9, color="0000FF")     # input hardcoded = blu
-F_CALC   = Font(name=FONT, size=9, color="000000")     # formula = nero
-F_LINK   = Font(name=FONT, size=9, color="008000")     # link altro foglio = verde
-F_TOTAL  = Font(name=FONT, size=9, bold=True, color="FFFFFF")
-F_SECT   = Font(name=FONT, size=10, bold=True, color="1F3B57")
+YEL  = "FDC300"   # giallo istituzionale
+BLK  = "000000"   # nero
+WHT  = "FFFFFF"   # bianco
+S2   = "F4F4F4"   # surface-2
+INK2 = "3A3A3A"   # testo secondario
+INK3 = "6E6E6E"   # testo terziario
+RULE = "DCDCDC"   # righe sottili
+RULS = "9B9B9B"   # righe marcate
+G_MID = "8C8C8C"  # grigio della scala grafici (serie non in evidenza)
 
-FILL_TITLE = PatternFill("solid", fgColor=C_DARK)
-FILL_HEAD  = PatternFill("solid", fgColor=C_DARK)
-FILL_MID   = PatternFill("solid", fgColor=C_MID)
-FILL_INPUT = PatternFill("solid", fgColor=C_INPUT)
-FILL_CALC  = PatternFill("solid", fgColor=C_CALC)
-FILL_TOT   = PatternFill("solid", fgColor=C_TOT)
+F_TITLE = Font(name=FONT, size=13, bold=True, color=WHT)
+F_SUB   = Font(name=FONT, size=8.5, color=INK3)
+F_HEAD  = Font(name=FONT, size=9, bold=True, color=WHT)
+F_HEADY = Font(name=FONT, size=9, bold=True, color=BLK)     # header colonna da compilare
+F_BODY  = Font(name=FONT, size=9, color=BLK)
+F_BODYB = Font(name=FONT, size=9, bold=True, color=BLK)
+F_IN    = Font(name=FONT, size=9, color=BLK)                # cella da compilare
+F_CALC  = Font(name=FONT, size=9, color=INK2)               # cella calcolata
+F_CALCB = Font(name=FONT, size=9, bold=True, color=INK2)
+F_TOTAL = Font(name=FONT, size=9, bold=True, color=WHT)
+F_EX    = Font(name=FONT, size=9, italic=True, color=INK3)
+F_ACC   = Font(name=FONT, size=9, bold=True, color=BLK)     # testo su fondo giallo
 
-thin = Side(style="thin", color="BFBFBF")
-BOX  = Border(left=thin, right=thin, top=thin, bottom=thin)
+# I fill vanno dichiarati in ARGB a 8 cifre con entrambi i colori: openpyxl
+# omette l'attributo quando il valore coincide con il proprio default, e
+# "000000" normalizzato È quel default — un fill nero dichiarato così
+# sparisce dai dxf della formattazione condizionale.
+def fill(hex6):
+    argb = "FF" + hex6
+    return PatternFill("solid", start_color=argb, end_color=argb)
+
+FILL_BLK = fill(BLK)
+FILL_YEL = fill(YEL)
+FILL_S2  = fill(S2)
+FILL_WHT = fill(WHT)
+FILL_GMID = fill(G_MID)
+
+# Tabelle: righe orizzontali sottili, nessun bordo verticale.
+# Le celle da compilare portano un riquadro nero: è il marcatore di "qui si scrive".
+r_thin  = Side(style="thin", color=RULE)
+r_black = Side(style="thin", color=BLK)
+r_yel   = Side(style="thick", color=YEL)
+
+HRULE   = Border(bottom=r_thin)
+INBOX   = Border(left=r_black, right=r_black, top=r_black, bottom=r_black)
+r_grey  = Side(style="thin", color=RULS)
+CALCBOX = Border(left=r_grey, right=r_grey, top=r_grey, bottom=r_grey)
+UNDERY  = Border(bottom=r_yel)          # filetto giallo sotto la fascia titolo
+OVERY   = Border(top=r_yel)             # filetto giallo sopra la riga totale
 
 TOP  = Alignment(horizontal="left",   vertical="top", wrap_text=True)
 CTR  = Alignment(horizontal="center", vertical="center", wrap_text=True)
 CTRV = Alignment(horizontal="center", vertical="top")
-RGT  = Alignment(horizontal="right",  vertical="top")
 
-EUR = '#,##0.00\\ "€";[Red]-#,##0.00\\ "€";"-"'
+EUR = '#,##0.00\\ "€";-#,##0.00\\ "€";"-"'
 NUM = '#,##0.0;-#,##0.0;"-"'
 INT = '#,##0;-#,##0;"-"'
 
 wb = Workbook()
 
+
+def banda_titolo(sh, rng, testo):
+    """Fascia titolo: fondo nero, testo bianco, filetto giallo sotto.
+    Il chevron '›' è il pittogramma del marchio."""
+    first = rng.split(":")[0]
+    sh.merge_cells(rng)
+    sh[first] = f"›  {testo}"
+    sh[first].font = F_TITLE
+    sh[first].alignment = Alignment(horizontal="left", vertical="center")
+    col_a, col_b = first[0], rng.split(":")[1][0]
+    row = int("".join(ch for ch in first if ch.isdigit()))
+    for i in range(ord(col_a), ord(col_b) + 1):
+        c = sh[f"{chr(i)}{row}"]
+        c.fill = FILL_BLK
+        c.border = UNDERY
+    sh.row_dimensions[row].height = 26
+
+
 # ================================================================ PARAMETRI
-ps = wb.active
-ps.title = "Parametri"
+ps = wb.create_sheet("Parametri")
 ps.sheet_view.showGridLines = False
 
-ps.merge_cells("A1:E1")
-ps["A1"] = "Parametri di calcolo"
-ps["A1"].font = F_TITLE; ps["A1"].fill = FILL_TITLE; ps["A1"].alignment = CTR
-ps.row_dimensions[1].height = 24
+banda_titolo(ps, "A1:E1", "PARAMETRI DI CALCOLO")
 
-ps["A2"] = ("Le celle GIALLE sono da compilare. Tutto il resto del file si ricalcola da qui: "
-            "modificando un valore in questa pagina si aggiornano ore e costi di tutte le fasi.")
+ps["A2"] = ("Le celle con riquadro nero, sotto l'intestazione gialla, sono da compilare. Tutto il resto del file si "
+            "ricalcola da qui: modificando un valore in questa pagina si aggiornano ore e costi di "
+            "tutte le fasi.")
 ps["A2"].font = F_SUB
 ps.merge_cells("A2:E2")
+ps.row_dimensions[2].height = 24
 
 for col, txt, w in (("A", "Parametro", 42), ("B", "", 2), ("C", "Valore", 14),
                     ("D", "Unità", 12), ("E", "Note", 56)):
     ps.column_dimensions[col].width = w
+    ps[f"{col}4"].fill = FILL_YEL if col == "C" else FILL_BLK
     if txt:
         ps[f"{col}4"] = txt
-        ps[f"{col}4"].font = F_HEAD; ps[f"{col}4"].fill = FILL_HEAD; ps[f"{col}4"].alignment = CTR
+        ps[f"{col}4"].font = F_HEADY if col == "C" else F_HEAD
+        ps[f"{col}4"].alignment = CTR
 
 PARAMS = [
     (5,  "Ore per giornata", 8, "h",
@@ -89,21 +134,22 @@ PARAMS = [
     (10, "Lead time target di progetto", 10, "settimane",
      "Durata di calendario dichiarata in fase di impostazione.", False),
 ]
-for r, label, val, unit, note, is_input in PARAMS:
+for r, label, val, unit, note, _ in PARAMS:
     ps[f"A{r}"] = label;  ps[f"A{r}"].font = F_BODYB; ps[f"A{r}"].alignment = TOP
-    ps[f"C{r}"] = val
-    ps[f"C{r}"].font = F_INPUT
-    ps[f"C{r}"].fill = FILL_INPUT
-    ps[f"C{r}"].alignment = CTRV
-    ps[f"C{r}"].border = BOX
-    ps[f"C{r}"].number_format = INT if unit != "€/h" else EUR
+    c = ps[f"C{r}"]
+    c.value = val
+    c.font = F_IN; c.fill = FILL_WHT; c.border = INBOX
+    c.alignment = CTRV
+    c.number_format = INT if unit != "€/h" else EUR
     ps[f"D{r}"] = unit; ps[f"D{r}"].font = F_BODY; ps[f"D{r}"].alignment = CTRV
     ps[f"E{r}"] = note; ps[f"E{r}"].font = F_BODY; ps[f"E{r}"].alignment = TOP
+    for col in "ABDE":
+        ps[f"{col}{r}"].border = HRULE
 
 ps["C6"].comment = Comment("Tariffa non ancora fornita. Finché la cella resta vuota, "
-                           "la colonna 'Costo totale' della WBS vale 0.", "WBS")
+                           "la colonna «Costo totale» della WBS vale 0.", "WBS")
 ps["A12"] = "Riferimenti usati dalle formule"
-ps["A12"].font = F_SECT
+ps["A12"].font = F_BODYB
 ps["A13"] = ("Ore per giornata = Parametri!$C$5   ·   Tariffe = $C$6 / $C$7 / $C$8   ·   "
              "Lead time target = $C$10")
 ps["A13"].font = F_SUB
@@ -118,11 +164,9 @@ P_TGT  = "Parametri!$C$10"
 # ================================================================ RUOLI
 rs = wb.create_sheet("Ruoli")
 rs.sheet_view.showGridLines = False
-rs.merge_cells("A1:E1")
-rs["A1"] = "Team di progetto — ruoli e nomi"
-rs["A1"].font = F_TITLE; rs["A1"].fill = FILL_TITLE; rs["A1"].alignment = CTR
-rs.row_dimensions[1].height = 24
-rs["A2"] = "Compilare la colonna Nome. I ruoli sono quelli richiamati nelle colonne Owner e Partecipanti della WBS."
+banda_titolo(rs, "A1:E1", "TEAM DI PROGETTO — RUOLI E NOMI")
+rs["A2"] = ("Compilare la colonna Nome. I ruoli sono quelli richiamati nelle colonne Owner e "
+            "Partecipanti della WBS.")
 rs["A2"].font = F_SUB
 rs.merge_cells("A2:E2")
 
@@ -130,7 +174,9 @@ for col, txt, w in (("A", "Ruolo", 32), ("B", "Nome", 28), ("C", "Seniority", 14
                     ("D", "Presidio", 30), ("E", "Note", 46)):
     rs.column_dimensions[col].width = w
     rs[f"{col}4"] = txt
-    rs[f"{col}4"].font = F_HEAD; rs[f"{col}4"].fill = FILL_HEAD; rs[f"{col}4"].alignment = CTR
+    rs[f"{col}4"].fill = FILL_YEL if col == "B" else FILL_BLK
+    rs[f"{col}4"].font = F_HEADY if col == "B" else F_HEAD
+    rs[f"{col}4"].alignment = CTR
 
 RUOLI = [
     ("Commerciale", None, "Senior", "Fase 1 — convocazione kick off",
@@ -148,18 +194,17 @@ for i, (ruolo, nome, sen, pres, note) in enumerate(RUOLI):
     r = 5 + i
     rs[f"A{r}"] = ruolo; rs[f"A{r}"].font = F_BODYB
     rs[f"B{r}"] = nome
-    rs[f"B{r}"].font = F_INPUT
-    if nome is None:
-        rs[f"B{r}"].fill = FILL_INPUT
+    rs[f"B{r}"].font = F_IN
+    rs[f"B{r}"].fill = FILL_WHT
+    rs[f"B{r}"].border = INBOX
     rs[f"C{r}"] = sen; rs[f"C{r}"].font = F_BODY; rs[f"C{r}"].alignment = CTRV
     rs[f"D{r}"] = pres; rs[f"D{r}"].font = F_BODY; rs[f"D{r}"].alignment = TOP
     rs[f"E{r}"] = note; rs[f"E{r}"].font = F_BODY; rs[f"E{r}"].alignment = TOP
-    for col in "ABCDE":
-        rs[f"{col}{r}"].border = BOX
-        if col in ("A", "B"):
-            rs[f"{col}{r}"].alignment = TOP
+    rs[f"A{r}"].alignment = TOP
+    rs[f"B{r}"].alignment = TOP
+    for col in "ACDE":
+        rs[f"{col}{r}"].border = HRULE
     rs.row_dimensions[r].height = 30
-
 # ================================================================ DATI FASI
 # (fase, tipo, modalita, blocco, sett_inizio, durata_sett, n_incontri, durata_h,
 #  descrizione, prep, followup, input_cliente, output, owner, partecipanti, delivery, note)
@@ -319,6 +364,7 @@ FASI = [
   "Modalità (presenza / remoto) da definire."),
 ]
 
+
 # ================================================================ WBS
 ws = wb.create_sheet("WBS", 0)
 ws.sheet_view.showGridLines = False
@@ -352,53 +398,51 @@ COLS = [
     ("Z", "Note", 46, "txt"),
 ]
 LAST = "Z"
-HR = 5                      # riga intestazioni
-R0 = 6                      # prima riga dati
-R1 = R0 + len(FASI) - 1     # ultima riga dati
-RT = R1 + 1                 # riga totale
+HR, R0 = 5, 6
+R1 = R0 + len(FASI) - 1
+RT = R1 + 1
 
-ws.merge_cells(f"A1:{LAST}1")
-ws["A1"] = "WORK BREAKDOWN STRUCTURE — Progetto di Assessment Go-to-Market"
-ws["A1"].font = F_TITLE; ws["A1"].fill = FILL_TITLE; ws["A1"].alignment = CTR
-ws.row_dimensions[1].height = 26
+banda_titolo(ws, f"A1:{LAST}1", "WORK BREAKDOWN STRUCTURE — PROGETTO DI ASSESSMENT GO-TO-MARKET")
 
 ws.merge_cells(f"A2:{LAST}2")
-ws["A2"] = ("LEGENDA — Celle GIALLE con testo blu: da compilare a mano (pianificazione settimane, incontri, "
-            "giornate). Celle GRIGIE: calcolate da formula, non modificare. Tariffe e ore/giornata si "
-            "impostano nel foglio «Parametri»; i nomi del team nel foglio «Ruoli».")
+ws["A2"] = ("LEGENDA — Le colonne con intestazione GIALLA sono da compilare a mano: le loro celle "
+            "portano un riquadro nero. Le celle su fondo GRIGIO sono calcolate da formula e non vanno "
+            "modificate. Tariffe e ore per giornata si impostano nel foglio «Parametri», i nomi del "
+            "team nel foglio «Ruoli».")
 ws["A2"].font = F_SUB; ws["A2"].alignment = TOP
-ws.row_dimensions[2].height = 26
+ws.row_dimensions[2].height = 24
 
 ws.merge_cells(f"A3:{LAST}3")
-ws["A3"] = ("Le colonne «gg Front office / Back office / Viaggio» esprimono GIORNATE-UOMO aggregate, non giorni "
-            "di calendario: 2 consulenti per mezza giornata dal cliente = 1 giornata front. La composizione "
-            "della squadra si descrive nella colonna «Delivery». Le ore di viaggio sono incluse nel monte ore.")
-ws["A3"].font = Font(name=FONT, size=9, italic=True, bold=True, color="C00000"); ws["A3"].alignment = TOP
+ws["A3"] = ("Le colonne «gg Front office / Back office / Viaggio» esprimono GIORNATE-UOMO aggregate, "
+            "non giorni di calendario: 2 consulenti per mezza giornata dal cliente = 1 giornata front. "
+            "La composizione della squadra si descrive nella colonna «Delivery». Le ore di viaggio sono "
+            "incluse nel monte ore.")
+ws["A3"].font = F_ACC
+ws["A3"].alignment = TOP
+for i in range(ord("A"), ord(LAST) + 1):
+    ws[f"{chr(i)}3"].fill = FILL_YEL
 ws.row_dimensions[3].height = 26
 
 for letter, header, width, kind in COLS:
     ws.column_dimensions[letter].width = width
     c = ws[f"{letter}{HR}"]
     c.value = header
-    c.font = F_HEAD; c.fill = FILL_HEAD; c.alignment = CTR; c.border = BOX
+    c.fill = FILL_YEL if kind == "in" else FILL_BLK
+    c.font = F_HEADY if kind == "in" else F_HEAD
+    c.alignment = CTR
 ws.row_dimensions[HR].height = 34
-
-KIND = {letter: kind for letter, _, _, kind in COLS}
 
 for i, f in enumerate(FASI):
     (fase, tipo, mod, blocco, w_start, w_dur, n_inc, dur_h,
      descr, prep, follow, inp, outp, owner, part, deliv, note) = f
     r = R0 + i
     vals = {
-        "A": i + 1,
-        "B": f"1.{i+1}",
+        "A": i + 1, "B": f"1.{i+1}",
         "C": fase, "D": tipo, "E": mod, "F": blocco,
         "G": w_start, "H": w_dur,
         "I": f'=IF(AND(G{r}<>"",H{r}<>""),G{r}+H{r}-1,"")',
         "J": descr, "K": prep, "L": follow, "M": inp, "N": outp, "O": owner, "P": part,
-        "Q": n_inc, "R": dur_h,
-        "S": None, "T": None, "U": None,
-        "V": deliv,
+        "Q": n_inc, "R": dur_h, "S": None, "T": None, "U": None, "V": deliv,
         "W": f'=IF(COUNT(S{r}:U{r})=0,"",SUM(S{r}:U{r}))',
         "X": f'=IF(W{r}="","",W{r}*{P_ORE})',
         "Y": (f'=IF(COUNT(S{r}:U{r})=0,"",S{r}*{P_ORE}*{P_FRO}'
@@ -408,47 +452,44 @@ for i, f in enumerate(FASI):
     for letter, _, _, kind in COLS:
         c = ws[f"{letter}{r}"]
         c.value = vals[letter]
-        c.border = BOX
         if kind == "in":
-            c.font = F_INPUT; c.fill = FILL_INPUT; c.alignment = CTRV; c.number_format = NUM
+            c.font = F_IN; c.fill = FILL_WHT; c.border = INBOX
+            c.alignment = CTRV; c.number_format = NUM
         elif kind == "calc":
-            c.font = F_CALC; c.fill = FILL_CALC; c.alignment = CTRV
+            c.font = F_CALC; c.fill = FILL_S2; c.border = HRULE
+            c.alignment = CTRV
             c.number_format = EUR if letter == "Y" else NUM
         elif kind == "num":
-            c.font = F_BODYB; c.alignment = CTRV
+            c.font = F_BODYB; c.alignment = CTRV; c.border = HRULE
         else:
             c.font = F_BODYB if letter == "C" else F_BODY
-            c.alignment = TOP
-    ws[f"I{r}"].number_format = INT
-    ws[f"Q{r}"].number_format = INT
+            c.alignment = TOP; c.border = HRULE
     ws.row_dimensions[r].height = 78
-    if tipo == "Interna":
-        for letter in ("C", "D"):
-            ws[f"{letter}{r}"].fill = FILL_MID
 
-# --- riga totale
-ws[f"A{RT}"] = ""
+# --- riga totale: fondo nero, testo bianco, filetto giallo sopra
 ws.merge_cells(f"A{RT}:R{RT}")
 ws[f"A{RT}"] = "TOTALE PROGETTO"
-ws[f"A{RT}"].font = F_TOTAL; ws[f"A{RT}"].alignment = Alignment(horizontal="right", vertical="center")
+ws[f"A{RT}"].font = F_TOTAL
+ws[f"A{RT}"].alignment = Alignment(horizontal="right", vertical="center")
 for letter, _, _, _ in COLS:
     c = ws[f"{letter}{RT}"]
-    c.fill = FILL_TOT; c.border = BOX; c.font = F_TOTAL; c.alignment = CTR
+    c.fill = FILL_BLK; c.font = F_TOTAL; c.alignment = CTR; c.border = OVERY
 for letter in ("S", "T", "U", "W", "X", "Y"):
     ws[f"{letter}{RT}"] = f"=SUM({letter}{R0}:{letter}{R1})"
     ws[f"{letter}{RT}"].number_format = EUR if letter == "Y" else NUM
 ws.row_dimensions[RT].height = 22
 
-# --- riga di esempio (fuori dal totale)
+# --- riga di esempio, fuori dal totale
 RE = RT + 2
+RX = RE + 1
 ws.merge_cells(f"A{RE}:{LAST}{RE}")
 ws[f"A{RE}"] = ("ESEMPIO DI COMPILAZIONE — riga dimostrativa, NON conteggiata nei totali. "
                 "Mostra il formato atteso per le colonne numeriche.")
-ws[f"A{RE}"].font = Font(name=FONT, size=9, bold=True, italic=True, color="806000")
-ws[f"A{RE}"].fill = FILL_INPUT
+ws[f"A{RE}"].font = Font(name=FONT, size=9, bold=True, italic=True, color=INK2)
 ws[f"A{RE}"].alignment = TOP
+for i in range(ord("A"), ord(LAST) + 1):
+    ws[f"{chr(i)}{RE}"].fill = FILL_S2
 
-RX = RE + 1
 ex = {
     "A": "es.", "B": "1.x", "C": "Nome della fase", "D": "Cliente", "E": "In presenza",
     "F": "2 · Workshop in parallelo", "G": 3, "H": 2, "I": f'=G{RX}+H{RX}-1',
@@ -460,13 +501,12 @@ ex = {
     "V": "3 persone in presenza, 1 sola lavora in back office",
     "W": f'=SUM(S{RX}:U{RX})', "X": f'=W{RX}*{P_ORE}',
     "Y": f'=S{RX}*{P_ORE}*{P_FRO}+T{RX}*{P_ORE}*{P_BACK}+U{RX}*{P_ORE}*{P_TRAV}',
-    "Z": "1,5 gg front = 3 consulenti per mezza giornata (0,5) + 3 consulenti per mezza giornata (0,5) ...",
+    "Z": "1,5 gg front = 3 consulenti per mezza giornata + 3 consulenti per mezza giornata.",
 }
 for letter, _, _, kind in COLS:
     c = ws[f"{letter}{RX}"]
     c.value = ex[letter]
-    c.border = BOX
-    c.font = Font(name=FONT, size=9, italic=True, color="806000")
+    c.font = F_EX; c.fill = FILL_S2; c.border = HRULE
     c.alignment = CTRV if kind in ("in", "calc", "num") else TOP
     if kind == "calc":
         c.number_format = EUR if letter == "Y" else NUM
@@ -474,7 +514,6 @@ for letter, _, _, kind in COLS:
         c.number_format = NUM
 ws.row_dimensions[RX].height = 44
 
-# --- validazioni
 dv_tipo = DataValidation(type="list", formula1='"Cliente,Interna"', allow_blank=True)
 dv_mod  = DataValidation(type="list", formula1='"In presenza,Remoto,Interna,Da definire"', allow_blank=True)
 ws.add_data_validation(dv_tipo); ws.add_data_validation(dv_mod)
@@ -487,42 +526,55 @@ ws.auto_filter.ref = f"A{HR}:{LAST}{R1}"
 # ================================================================ TIMELINE
 ts = wb.create_sheet("Timeline", 1)
 ts.sheet_view.showGridLines = False
-NW = 12                       # settimane rappresentate
-W_FIRST = 7                   # colonna G = settimana 1
-THR = 4                       # riga intestazioni
-T0 = 5
+NW, W_FIRST = 12, 7
+THR, RMK, T0 = 4, 5, 6
 T1 = T0 + len(FASI) - 1
+RA = T1 + 1
+W_LAST = get_column_letter(W_FIRST + NW - 1)
+GC = get_column_letter(W_FIRST)
 
-ts.merge_cells(f"A1:{get_column_letter(W_FIRST+NW-1)}1")
-ts["A1"] = "TIMELINE DI PROGETTO — sovrapposizione delle fasi per settimana"
-ts["A1"].font = F_TITLE; ts["A1"].fill = FILL_TITLE; ts["A1"].alignment = CTR
-ts.row_dimensions[1].height = 26
+banda_titolo(ts, f"A1:{W_LAST}1", "TIMELINE DI PROGETTO — SOVRAPPOSIZIONE DELLE FASI PER SETTIMANA")
 
-ts.merge_cells(f"A2:{get_column_letter(W_FIRST+NW-1)}2")
+ts.merge_cells(f"A2:{W_LAST}2")
 ts["A2"] = ("Le barre si disegnano da sole dalle settimane impostate nella WBS: qui non si scrive nulla. "
-            "ARANCIONE = fasi che si svolgono nelle STESSE settimane, in parallelo. BLU = fase con il cliente. "
-            "GRIGIO = fase interna. La riga in fondo conta quante fasi sono attive in ciascuna settimana.")
+            "GIALLO = le fasi che si svolgono nelle STESSE settimane, in parallelo. NERO = altra fase con "
+            "il cliente. GRIGIO = fase interna. La riga in fondo conta quante fasi sono attive in "
+            "ciascuna settimana.")
 ts["A2"].font = F_SUB; ts["A2"].alignment = TOP
-ts.row_dimensions[2].height = 26
+ts.row_dimensions[2].height = 24
 
 THEAD = [("A", "#", 5), ("B", "Fase", 32), ("C", "Tipo", 11),
          ("D", "Blocco", 24), ("E", "Da\nsett.", 8), ("F", "A\nsett.", 8)]
 for letter, txt, w in THEAD:
     ts.column_dimensions[letter].width = w
     c = ts[f"{letter}{THR}"]
-    c.value = txt; c.font = F_HEAD; c.fill = FILL_HEAD; c.alignment = CTR; c.border = BOX
+    c.value = txt; c.font = F_HEAD; c.fill = FILL_BLK; c.alignment = CTR
 for k in range(NW):
     letter = get_column_letter(W_FIRST + k)
     ts.column_dimensions[letter].width = 5.5
     c = ts[f"{letter}{THR}"]
     c.value = k + 1
     c.number_format = '"S"0'
-    c.font = F_HEAD; c.fill = FILL_HEAD; c.alignment = CTR; c.border = BOX
+    c.font = F_HEAD; c.fill = FILL_BLK; c.alignment = CTR
 ts.row_dimensions[THR].height = 24
 
+# riga marcatore: chevron giallo sulle settimane con più di una fase attiva
+ts.merge_cells(f"A{RMK}:F{RMK}")
+ts[f"A{RMK}"] = "Settimane con fasi in parallelo  ›"
+ts[f"A{RMK}"].font = F_BODYB
+ts[f"A{RMK}"].alignment = Alignment(horizontal="right", vertical="center")
+for k in range(NW):
+    letter = get_column_letter(W_FIRST + k)
+    c = ts[f"{letter}{RMK}"]
+    c.value = f'=IF({letter}{RA}>1,"›","")'
+    c.font = F_ACC; c.alignment = CTR
+ts.row_dimensions[RMK].height = 18
+ts.conditional_formatting.add(f"{GC}{RMK}:{W_LAST}{RMK}", FormulaRule(
+    formula=[f'{GC}{RMK}<>""'], fill=FILL_YEL,
+    font=Font(name=FONT, size=9, bold=True, color=BLK), stopIfTrue=True))
+
 for i in range(len(FASI)):
-    r = T0 + i
-    wr = R0 + i
+    r, wr = T0 + i, R0 + i
     ts[f"A{r}"] = f"=WBS!A{wr}"
     ts[f"B{r}"] = f"=WBS!C{wr}"
     ts[f"C{r}"] = f"=WBS!D{wr}"
@@ -531,67 +583,69 @@ for i in range(len(FASI)):
     ts[f"F{r}"] = f"=WBS!I{wr}"
     for letter in ("A", "B", "C", "D", "E", "F"):
         c = ts[f"{letter}{r}"]
-        c.font = F_LINK
-        c.border = BOX
+        c.font = F_CALCB if letter == "B" else F_CALC
+        c.border = HRULE
         c.alignment = TOP if letter in ("B", "D") else CTRV
-    ts[f"B{r}"].font = Font(name=FONT, size=9, bold=True, color="008000")
     for k in range(NW):
         letter = get_column_letter(W_FIRST + k)
         c = ts[f"{letter}{r}"]
         c.value = (f'=IF(AND($E{r}<>"",$F{r}<>"",$E{r}<={letter}${THR},'
                    f'$F{r}>={letter}${THR}),1,"")')
-        c.number_format = ";;;"          # il valore resta invisibile: si vede solo il colore
-        c.border = BOX
+        c.font = F_BODY
+        c.number_format = ";;;"      # il valore resta invisibile: si vede solo il pieno
+        c.border = HRULE
         c.alignment = CTR
     ts.row_dimensions[r].height = 22
 
-GRID = f"{get_column_letter(W_FIRST)}{T0}:{get_column_letter(W_FIRST+NW-1)}{T1}"
-GC = get_column_letter(W_FIRST)
+# scala monocroma + unico accento: il giallo va alla serie che porta il messaggio
+GRID = f"{GC}{T0}:{W_LAST}{T1}"
 ts.conditional_formatting.add(GRID, FormulaRule(
     formula=[f'AND(ISNUMBER(SEARCH("parallelo",$D{T0})),{GC}{T0}=1)'],
-    fill=PatternFill("solid", start_color=C_PAR, end_color=C_PAR), stopIfTrue=True))
+    fill=FILL_YEL, stopIfTrue=True))
 ts.conditional_formatting.add(GRID, FormulaRule(
     formula=[f'AND($C{T0}="Interna",{GC}{T0}=1)'],
-    fill=PatternFill("solid", start_color=C_INT, end_color=C_INT), stopIfTrue=True))
+    fill=FILL_GMID, stopIfTrue=True))
 ts.conditional_formatting.add(GRID, FormulaRule(
-    formula=[f'{GC}{T0}=1'],
-    fill=PatternFill("solid", start_color=C_CLIENT, end_color=C_CLIENT), stopIfTrue=True))
+    formula=[f'{GC}{T0}=1'], fill=FILL_BLK, stopIfTrue=True))
 
-# --- righe di controllo del parallelismo
-RA = T1 + 1
+# le fasi del blocco parallelo si distinguono anche per peso del carattere
+ts.conditional_formatting.add(f"B{T0}:F{T1}", FormulaRule(
+    formula=[f'ISNUMBER(SEARCH("parallelo",$D{T0}))'],
+    font=Font(name=FONT, size=9, bold=True, color=BLK)))
+
+# --- riga di conteggio
 ts.merge_cells(f"A{RA}:F{RA}")
 ts[f"A{RA}"] = "Fasi attive nella settimana"
-ts[f"A{RA}"].font = F_TOTAL; ts[f"A{RA}"].fill = FILL_TOT
+ts[f"A{RA}"].font = F_TOTAL
 ts[f"A{RA}"].alignment = Alignment(horizontal="right", vertical="center")
 for letter in ("A", "B", "C", "D", "E", "F"):
-    ts[f"{letter}{RA}"].fill = FILL_TOT
+    ts[f"{letter}{RA}"].fill = FILL_BLK
+    ts[f"{letter}{RA}"].border = OVERY
 for k in range(NW):
     letter = get_column_letter(W_FIRST + k)
     c = ts[f"{letter}{RA}"]
     c.value = f"=COUNT({letter}{T0}:{letter}{T1})"
-    c.font = F_TOTAL; c.fill = FILL_TOT; c.alignment = CTR; c.border = BOX
-    c.number_format = INT
+    c.font = F_TOTAL; c.fill = FILL_BLK; c.alignment = CTR
+    c.border = OVERY; c.number_format = INT
 ts.row_dimensions[RA].height = 22
+ts.conditional_formatting.add(f"{GC}{RA}:{W_LAST}{RA}", FormulaRule(
+    formula=[f'{GC}{RA}>1'], fill=FILL_YEL,
+    font=Font(name=FONT, size=9, bold=True, color=BLK), stopIfTrue=True))
 
 RB = RA + 2
-ts[f"A{RB}"] = "Settimane con più di una fase attiva in parallelo"
-ts[f"A{RB}"].font = F_BODYB
-ts.merge_cells(f"A{RB}:E{RB}")
-ts[f"F{RB}"] = (f'=COUNTIF({get_column_letter(W_FIRST)}{RA}:'
-                f'{get_column_letter(W_FIRST+NW-1)}{RA},">1")')
-ts[f"F{RB}"].font = F_CALC; ts[f"F{RB}"].fill = FILL_CALC
-ts[f"F{RB}"].alignment = CTR; ts[f"F{RB}"].border = BOX; ts[f"F{RB}"].number_format = INT
+for r, label, formula in (
+    (RB,     "Settimane con più di una fase attiva in parallelo", f'=COUNTIF({GC}{RA}:{W_LAST}{RA},">1")'),
+    (RB + 1, "Settimana di massima concentrazione (n. fasi in parallelo)", f'=MAX({GC}{RA}:{W_LAST}{RA})'),
+):
+    ts[f"A{r}"] = label
+    ts[f"A{r}"].font = F_BODYB
+    ts.merge_cells(f"A{r}:E{r}")
+    c = ts[f"F{r}"]
+    c.value = formula
+    c.font = F_CALCB; c.fill = FILL_S2; c.border = CALCBOX
+    c.alignment = CTR; c.number_format = INT
 
-RC = RB + 1
-ts[f"A{RC}"] = "Settimana di massima concentrazione (n. fasi in parallelo)"
-ts[f"A{RC}"].font = F_BODYB
-ts.merge_cells(f"A{RC}:E{RC}")
-ts[f"F{RC}"] = (f'=MAX({get_column_letter(W_FIRST)}{RA}:'
-                f'{get_column_letter(W_FIRST+NW-1)}{RA})')
-ts[f"F{RC}"].font = F_CALC; ts[f"F{RC}"].fill = FILL_CALC
-ts[f"F{RC}"].alignment = CTR; ts[f"F{RC}"].border = BOX; ts[f"F{RC}"].number_format = INT
-
-ts.freeze_panes = f"G{T0}"
+ts.freeze_panes = f"{GC}{T0}"
 
 # ================================================================ RIEPILOGO
 sm = wb.create_sheet("Riepilogo", 2)
@@ -599,34 +653,40 @@ sm.sheet_view.showGridLines = False
 for col, w in (("A", 58), ("B", 2), ("C", 18), ("D", 13), ("E", 62)):
     sm.column_dimensions[col].width = w
 
-sm.merge_cells("A1:E1")
-sm["A1"] = "RIEPILOGO DI PROGETTO"
-sm["A1"].font = F_TITLE; sm["A1"].fill = FILL_TITLE; sm["A1"].alignment = CTR
-sm.row_dimensions[1].height = 26
+banda_titolo(sm, "A1:E1", "RIEPILOGO DI PROGETTO")
 sm.merge_cells("A2:E2")
-sm["A2"] = "Tutti i valori sono calcolati dalla WBS e dai Parametri. Nessuna cella di questo foglio va compilata a mano."
+sm["A2"] = ("Tutti i valori sono calcolati dalla WBS e dai Parametri. Nessuna cella di questo foglio "
+            "va compilata a mano.")
 sm["A2"].font = F_SUB
 sm.row_dimensions[2].height = 18
 
+
 def sect(r, title):
+    """Fascia di sezione: superficie d'accento — fondo giallo, testo nero."""
     sm.merge_cells(f"A{r}:E{r}")
-    sm[f"A{r}"] = title
-    sm[f"A{r}"].font = Font(name=FONT, size=10, bold=True, color="FFFFFF")
-    sm[f"A{r}"].fill = PatternFill("solid", fgColor="4472C4")
+    sm[f"A{r}"] = f"›  {title}"
+    sm[f"A{r}"].font = Font(name=FONT, size=10, bold=True, color=BLK)
     sm[f"A{r}"].alignment = Alignment(horizontal="left", vertical="center")
+    for col in "ABCDE":
+        sm[f"{col}{r}"].fill = FILL_YEL
     sm.row_dimensions[r].height = 20
+
 
 def line(r, label, formula, fmt=NUM, unit="", note="", bold=False):
     sm[f"A{r}"] = label
     sm[f"A{r}"].font = F_BODYB if bold else F_BODY
     sm[f"A{r}"].alignment = TOP
+    sm[f"A{r}"].border = HRULE
     c = sm[f"C{r}"]
     c.value = formula
-    c.font = Font(name=FONT, size=9, bold=bold, color="008000")
-    c.fill = FILL_CALC; c.border = BOX; c.alignment = CTRV; c.number_format = fmt
-    sm[f"D{r}"] = unit; sm[f"D{r}"].font = F_BODY; sm[f"D{r}"].alignment = CTRV
-    sm[f"E{r}"] = note; sm[f"E{r}"].font = F_SUB; sm[f"E{r}"].alignment = TOP
+    c.font = F_CALCB if bold else F_CALC
+    c.fill = FILL_S2; c.border = HRULE; c.alignment = CTRV; c.number_format = fmt
+    sm[f"D{r}"] = unit; sm[f"D{r}"].font = F_BODY
+    sm[f"D{r}"].alignment = CTRV; sm[f"D{r}"].border = HRULE
+    sm[f"E{r}"] = note; sm[f"E{r}"].font = F_SUB
+    sm[f"E{r}"].alignment = TOP; sm[f"E{r}"].border = HRULE
     return c
+
 
 D_RNG = f"WBS!$D${R0}:$D${R1}"
 W_RNG = f"WBS!$W${R0}:$W${R1}"
@@ -671,43 +731,60 @@ line(29, "Settimane recuperate dalla parallelizzazione", "=C27-C28", INT, "setti
      "Effetto dei workshop svolti nelle stesse due settimane.")
 line(30, "Lead time target dichiarato", f"={P_TGT}", INT, "settimane",
      "Impostato nel foglio «Parametri».")
-c_delta = line(31, "SCOSTAMENTO effettivo vs target", "=C28-C30", INT, "settimane",
-               "Zero = il piano quadra con il target. Diverso da zero = la cella si colora di rosso.",
-               bold=True)
-sm.conditional_formatting.add("C31", FormulaRule(
-    formula=["C31<>0"],
-    fill=PatternFill("solid", start_color="FFC7CE", end_color="FFC7CE"),
-    font=Font(name=FONT, size=9, bold=True, color="9C0006")))
-sm.conditional_formatting.add("C31", FormulaRule(
-    formula=["C31=0"],
-    fill=PatternFill("solid", start_color="C6EFCE", end_color="C6EFCE"),
-    font=Font(name=FONT, size=9, bold=True, color="006100")))
+line(31, "SCOSTAMENTO effettivo vs target", "=C28-C30", INT, "settimane",
+     "Zero = il piano quadra. Se lo scostamento non è zero la cella si inverte in nero.", bold=True)
 
-sect(33, "IPOTESI E PUNTI APERTI")
+# Nessun colore semantico: lo stato è codificato con la scala monocroma
+# (fondo nero, testo bianco) e con un'etichetta in parole.
+sm.conditional_formatting.add("C31", FormulaRule(
+    formula=["C31<>0"], fill=FILL_BLK,
+    font=Font(name=FONT, size=9, bold=True, color=WHT), stopIfTrue=True))
+
+sm["A32"] = "Esito del controllo"
+sm["A32"].font = F_BODYB; sm["A32"].border = HRULE
+sm.merge_cells("C32:E32")
+sm["C32"] = ('=IF(C28=C30,"Il piano quadra con il lead time target.",'
+             '"NON QUADRA — rivedere le settimane di inizio e le durate nella WBS.")')
+sm["C32"].font = F_BODY
+sm["C32"].alignment = Alignment(horizontal="left", vertical="center")
+sm.conditional_formatting.add("C32:E32", FormulaRule(
+    formula=["$C$28<>$C$30"], fill=FILL_BLK,
+    font=Font(name=FONT, size=9, bold=True, color=WHT), stopIfTrue=True))
+sm.row_dimensions[32].height = 18
+
+sect(34, "IPOTESI E PUNTI APERTI")
 NOTES = [
  ("Pianificazione delle settimane",
-  "Il piano proposto è: S1 kick off · S2 analisi dati · S3–S4 i cinque workshop con il cliente in parallelo "
-  "(revenue model, ICP e customer journey, process design, tech stack, data model) · S5 interviste qualitative "
-  "a valle del process design · S6 sintesi e business case · S7 review con il cliente · S8–S9 consolidamento "
-  "report · S10 presentazione. Totale 10 settimane, coerente con il target dichiarato."),
+  "Il piano proposto è: S1 kick off · S2 analisi dati · S3–S4 i cinque workshop con il cliente in "
+  "parallelo (revenue model, ICP e customer journey, process design, tech stack, data model) · S5 "
+  "interviste qualitative a valle del process design · S6 sintesi e business case · S7 review con il "
+  "cliente · S8–S9 consolidamento report · S10 presentazione. Totale 10 settimane, coerente con il "
+  "target dichiarato."),
  ("Giornate front / back / viaggio",
-  "Non ancora fornite: le celle sono vuote e in giallo. Finché non sono compilate, ore e costi restano a zero."),
+  "Non ancora fornite: le celle sono vuote, sotto intestazione gialla. Finché non sono compilate, ore "
+  "e costi restano a zero."),
  ("Tariffe orarie",
-  "Non ancora fornite: da inserire nel foglio «Parametri». Sono tre tariffe distinte (front, back, viaggio)."),
+  "Non ancora fornite: da inserire nel foglio «Parametri». Sono tre tariffe distinte (front, back, "
+  "viaggio)."),
  ("Durata dei workshop",
   "Da definire per revenue model, ICP e customer journey, process design, tech stack, data model e "
   "presentazione finale (colonna «Durata incontro (h)» della WBS)."),
  ("Modalità da confermare",
-  "Tech stack, data model e presentazione finale sono impostati su «Da definire»: da scegliere fra presenza e "
-  "remoto. La scelta incide sulle giornate di viaggio."),
+  "Tech stack, data model e presentazione finale sono impostati su «Da definire»: da scegliere fra "
+  "presenza e remoto. La scelta incide sulle giornate di viaggio."),
  ("Somma sequenziale vs lead time",
-  "La somma delle durate di fase vale 18 settimane perché le cinque fasi in parallelo occupano ciascuna la "
-  "stessa finestra di 2 settimane. Il lead time reale resta 10 settimane: è questo il numero da leggere."),
+  "La somma delle durate di fase vale 18 settimane perché le cinque fasi in parallelo occupano "
+  "ciascuna la stessa finestra di 2 settimane. Il lead time reale resta 10 settimane: è questo il "
+  "numero da leggere."),
+ ("Identità visiva",
+  "Palette Impresoft di tre colori (giallo #FDC300, nero, bianco) più grigi puri derivati dal nero. "
+  "Font Manrope, fallback Arial. Nessun colore semantico: verde e rosso sono stati sostituiti dalla "
+  "scala monocroma e da etichette in parole."),
 ]
-r = 34
+r = 35
 for titolo, testo in NOTES:
     sm[f"A{r}"] = titolo
-    sm[f"A{r}"].font = F_BODYB; sm[f"A{r}"].alignment = TOP
+    sm[f"A{r}"].font = F_BODYB; sm[f"A{r}"].alignment = TOP; sm[f"A{r}"].border = HRULE
     sm.merge_cells(f"C{r}:E{r}")
     sm[f"C{r}"] = testo
     sm[f"C{r}"].font = F_BODY; sm[f"C{r}"].alignment = TOP
@@ -715,7 +792,6 @@ for titolo, testo in NOTES:
     r += 1
 
 # ================================================================ RIFINITURE
-# settimane e conteggi = numeri interi (non 1,0 ma 1)
 for r in list(range(R0, R1 + 1)) + [RX]:
     for letter in ("G", "H", "I", "Q"):
         ws[f"{letter}{r}"].number_format = INT
@@ -724,7 +800,6 @@ for r in range(T0, T1 + 1):
     for letter in ("A", "E", "F"):
         ts[f"{letter}{r}"].number_format = INT
 
-# impostazioni di stampa: orizzontale, adattato in larghezza
 for sh, land in ((ws, True), (ts, True), (sm, False), (ps, False), (rs, False)):
     sh.page_setup.orientation = "landscape" if land else "portrait"
     sh.page_setup.fitToWidth = 1
