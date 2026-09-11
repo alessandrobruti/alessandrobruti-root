@@ -274,13 +274,13 @@ COLS = [
     ("L", "Attività di follow-up", 40, "txt"), ("M", "Input dal cliente", 34, "txt"),
     ("N", "Output / Deliverable", 44, "txt"), ("O", "Owner", 26, "txt"), ("P", "Partecipanti", 34, "txt"),
     ("Q", "N.\nincontri", 8, "in"), ("R", "Durata\nincontro (h)", 10, "in"),
-    ("S", "N.\npersone", 8, "in"),
-    ("T", "gg Front\noffice", 10, "calc"), ("U", "gg Back\noffice", 10, "in"),
-    ("V", "gg\nViaggio", 9, "calc"), ("W", "Delivery (composizione team)", 40, "txt"),
-    ("X", "Tot.\ngiornate", 10, "calc"), ("Y", "Ore\ntotali", 10, "calc"),
-    ("Z", "Costo totale", 15, "calc"), ("AA", "Note", 52, "txt"),
+    ("S", "N.\npersone", 8, "in"), ("T", "N.\ntrasferte", 9, "in"),
+    ("U", "gg Front\noffice", 10, "calc"), ("V", "gg Back\noffice", 10, "in"),
+    ("W", "gg\nViaggio", 9, "calc"), ("X", "Delivery (composizione team)", 40, "txt"),
+    ("Y", "Tot.\ngiornate", 10, "calc"), ("Z", "Ore\ntotali", 10, "calc"),
+    ("AA", "Costo totale", 15, "calc"), ("AB", "Note", 52, "txt"),
 ]
-LAST = "AA"
+LAST = "AB"
 HR, R0 = 2, 3                     # intestazione in riga 2, dati dalla riga 3
 R1 = R0 + len(FASI) - 1
 RT = R1 + 1
@@ -308,17 +308,23 @@ ws[f"G{HR}"].comment = Comment(
     "La settimana di calendario da cui far partire il piano si imposta nel foglio "
     "«Timeline», in alto: cambiandola si spostano i mesi e le etichette di settimana "
     "senza toccare la WBS.", "WBS")
-ws[f"T{HR}"].comment = Comment(
+ws[f"U{HR}"].comment = Comment(
     "Calcolata: N. incontri × Durata incontro (h) × N. persone ÷ Ore per giornata.\n"
     "Per cambiare l'impegno, agire su quelle tre colonne.\n\n"
     "Sono GIORNATE-UOMO aggregate, non giorni di calendario: 3 consulenti per mezza "
     "giornata dal cliente = 1,5 giornate front.", "WBS")
-ws[f"U{HR}"].comment = Comment(
+ws[f"V{HR}"].comment = Comment(
     "Stime Impresoft. L'Offerta quantifica solo le ore erogate al cliente e il numero "
     "di trasferte: sul back office non dice nulla.", "WBS")
-ws[f"V{HR}"].comment = Comment(
-    "Calcolata: N. incontri × N. persone × Ore di viaggio ÷ Ore per giornata, solo "
+ws[f"W{HR}"].comment = Comment(
+    "Calcolata: N. trasferte × N. persone × Ore di viaggio ÷ Ore per giornata, solo "
     "sulle fasi in presenza.", "WBS")
+ws[f"T{HR}"].comment = Comment(
+    "Quante volte si va sul posto per questa fase. NON sempre coincide con il numero di "
+    "incontri: tre sessioni da due ore erogate nella stessa giornata sono tre incontri e "
+    "UNA trasferta.\n\n"
+    "È questo il numero che deve quadrare con le trasferte che il contratto dichiara "
+    "incluse nell'investimento.", "WBS")
 
 for i, f in enumerate(FASI):
     r = R0 + i
@@ -329,15 +335,15 @@ for i, f in enumerate(FASI):
         "I": f'=IF(AND(G{r}<>"",H{r}<>""),G{r}+H{r}-1,"")',
         "J": f["descr"], "K": f["prep"], "L": f["follow"], "M": f["inp"], "N": f["outp"],
         "O": f["owner"], "P": f["part"],
-        "Q": f["inc"], "R": f["ore"], "S": f["pers"],
-        "T": f'=IF(OR(Q{r}="",R{r}="",S{r}=""),0,Q{r}*R{r}*S{r}/{P_ORE})',
-        "U": f["back"],
-        "V": f'=IF(AND(E{r}="In presenza",Q{r}<>"",S{r}<>""),Q{r}*S{r}*{P_HVIAG}/{P_ORE},0)',
-        "W": f["deliv"],
-        "X": f"=T{r}+U{r}+V{r}",
-        "Y": f"=X{r}*{P_ORE}",
-        "Z": f"=T{r}*{P_ORE}*{P_FRO}+U{r}*{P_ORE}*{P_BACK}+V{r}*{P_ORE}*{P_TRAV}",
-        "AA": f["note"],
+        "Q": f["inc"], "R": f["ore"], "S": f["pers"], "T": f.get("trasf"),
+        "U": f'=IF(OR(Q{r}="",R{r}="",S{r}=""),0,Q{r}*R{r}*S{r}/{P_ORE})',
+        "V": f["back"],
+        "W": f'=IF(AND(E{r}="In presenza",T{r}<>"",S{r}<>""),T{r}*S{r}*{P_HVIAG}/{P_ORE},0)',
+        "X": f["deliv"],
+        "Y": f"=U{r}+V{r}+W{r}",
+        "Z": f"=Y{r}*{P_ORE}",
+        "AA": f"=U{r}*{P_ORE}*{P_FRO}+V{r}*{P_ORE}*{P_BACK}+W{r}*{P_ORE}*{P_TRAV}",
+        "AB": f["note"],
     }
     for letter, _, _, kind in COLS:
         c = ws[f"{letter}{r}"]
@@ -354,7 +360,7 @@ for i, f in enumerate(FASI):
         else:
             c.font = F_BODYB if letter == "C" else F_BODY
             c.alignment = TOP; c.border = HRULE
-    for letter in ("G", "H", "I", "Q", "S"):
+    for letter in ("G", "H", "I", "Q", "S", "T"):
         ws[f"{letter}{r}"].number_format = INT
     ws.row_dimensions[r].height = 96
 
@@ -363,11 +369,12 @@ ws[f"A{RT}"].alignment = RGTC
 for letter, _, _, _ in COLS:
     c = ws[f"{letter}{RT}"]
     c.fill = FILL_BLK; c.font = F_TOTAL; c.alignment = CTR; c.border = OVERY
-for letter in ("T", "U", "V", "X", "Y", "Z"):
+for letter in ("U", "V", "W", "Y", "Z", "AA"):
     ws[f"{letter}{RT}"] = f"=SUM({letter}{R0}:{letter}{R1})"
-    ws[f"{letter}{RT}"].number_format = EUR if letter == "Z" else NUM
-ws[f"Q{RT}"] = f"=SUM(Q{R0}:Q{R1})"
-ws[f"Q{RT}"].number_format = INT
+    ws[f"{letter}{RT}"].number_format = EUR if letter == "AA" else NUM
+for letter in ("Q", "T"):
+    ws[f"{letter}{RT}"] = f"=SUM({letter}{R0}:{letter}{R1})"
+    ws[f"{letter}{RT}"].number_format = INT
 
 dv_tipo = DataValidation(type="list", formula1='"Cliente,Interna"', allow_blank=True)
 dv_mod  = DataValidation(type="list", formula1='"In presenza,Remoto,Interna"', allow_blank=True)
@@ -514,8 +521,8 @@ ts.conditional_formatting.add(f"{GC}{RA}:{W_LAST}{RA}", FormulaRule(
 RB = RA + 2
 for r, label, formula, fmt in (
     (RB,     "Sessioni erogate al cliente (n. incontri)", f"=WBS!Q{RT}", INT),
-    (RB + 1, "di cui in presenza — trasferte incluse nell'investimento",
-     f'=SUMPRODUCT((WBS!$E${R0}:$E${R1}="In presenza")*WBS!$Q${R0}:$Q${R1})', INT),
+    (RB + 1, "Trasferte — sessioni sul posto incluse nell'investimento",
+     f"=WBS!T{RT}", INT),
     (RB + 2, "Settimana di massima concentrazione (n. fasi in parallelo)",
      f"=MAX({GC}{RA}:{W_LAST}{RA})", INT),
     (RB + 3, "Settimana ISO di chiusura del piano",
@@ -580,34 +587,36 @@ D_RNG = f"WBS!$D${R0}:$D${R1}"
 E_RNG = f"WBS!$E${R0}:$E${R1}"
 Q_RNG = f"WBS!$Q${R0}:$Q${R1}"
 S_RNG = f"WBS!$S${R0}:$S${R1}"
-X_RNG = f"WBS!$X${R0}:$X${R1}"
-Z_RNG = f"WBS!$Z${R0}:$Z${R1}"
+T_RNG = f"WBS!$T${R0}:$T${R1}"
+X_RNG = f"WBS!$Y${R0}:$Y${R1}"
+Z_RNG = f"WBS!$AA${R0}:$AA${R1}"
 
 sect(4, "IMPEGNO COMPLESSIVO")
-line(5, "Giornate front office (tempo erogato al cliente)", f"=WBS!T{RT}", NUM, "gg-uomo",
+line(5, "Giornate front office (tempo erogato al cliente)", f"=WBS!U{RT}", NUM, "gg-uomo",
      "Calcolate da n. incontri × durata × n. persone. Incontri in remoto inclusi.")
-line(6, "Giornate back office", f"=WBS!U{RT}", NUM, "gg-uomo",
+line(6, "Giornate back office", f"=WBS!V{RT}", NUM, "gg-uomo",
      "STIME Impresoft: il contratto non quantifica il back office.")
-line(7, "Giornate di viaggio", f"=WBS!V{RT}", NUM, "gg-uomo",
+line(7, "Giornate di viaggio", f"=WBS!W{RT}", NUM, "gg-uomo",
      "Solo fasi in presenza. Incluse nel monte ore.")
-line(8, "TOTALE giornate-uomo di progetto", f"=WBS!X{RT}", NUM, "gg-uomo", "", bold=True)
-line(9, "TOTALE ore di progetto", f"=WBS!Y{RT}", NUM, "h",
+line(8, "TOTALE giornate-uomo di progetto", f"=WBS!Y{RT}", NUM, "gg-uomo", "", bold=True)
+line(9, "TOTALE ore di progetto", f"=WBS!Z{RT}", NUM, "h",
      f"Totale giornate × ore per giornata ({P_ORE}).", bold=True)
 
 sect(11, "COSTO DELLE GIORNATE")
-line(12, "Costo ore front office", f"=WBS!T{RT}*{P_ORE}*{P_FRO}", EUR, "€")
-line(13, "Costo ore back office", f"=WBS!U{RT}*{P_ORE}*{P_BACK}", EUR, "€")
-line(14, "Costo ore di viaggio", f"=WBS!V{RT}*{P_ORE}*{P_TRAV}", EUR, "€")
-line(15, "COSTO TOTALE DELLE GIORNATE", f"=WBS!Z{RT}", EUR, "€", "", bold=True)
+line(12, "Costo ore front office", f"=WBS!U{RT}*{P_ORE}*{P_FRO}", EUR, "€")
+line(13, "Costo ore back office", f"=WBS!V{RT}*{P_ORE}*{P_BACK}", EUR, "€")
+line(14, "Costo ore di viaggio", f"=WBS!W{RT}*{P_ORE}*{P_TRAV}", EUR, "€")
+line(15, "COSTO TOTALE DELLE GIORNATE", f"=WBS!AA{RT}", EUR, "€", "", bold=True)
 line(16, "Quadratura (deve coincidere con la riga sopra)", "=SUM(C12:C14)", EUR, "€",
      "Controllo interno: se differisce c'è un errore di formula.")
 
 sect(18, "COSTO DELLE TRASFERTE — già incluso nell'investimento")
-line(19, "Sessioni in presenza",
-     f'=SUMPRODUCT(({E_RNG}="In presenza")*{Q_RNG})', INT, "n.",
-     f"Dalla WBS. Il contratto include le trasferte per {PAR.get('trasferte_incluse','?')} incontri in presenza.")
+line(19, "Trasferte (sessioni sul posto)", f"=WBS!T{RT}", INT, "n.",
+     f"Dalla WBS. Il contratto include le trasferte per "
+     f"{PAR.get('trasferte_incluse','?')} sessioni in presenza. Un incontro non è sempre "
+     f"una trasferta: più sessioni nella stessa giornata contano una volta.")
 line(20, "Persone-sessione in trasferta",
-     f'=SUMPRODUCT(({E_RNG}="In presenza")*{Q_RNG}*{S_RNG})', INT, "n.",
+     f'=SUMPRODUCT(({E_RNG}="In presenza")*{T_RNG}*{S_RNG})', INT, "n.",
      "Somma delle presenze fisiche: determina il vitto.")
 line(21, "Viaggi in auto", f"=IF({P_PAUTO}=0,0,ROUNDUP(C20/{P_PAUTO},0))", INT, "n.",
      "Persone-sessione ÷ persone per auto. Determina km e pedaggi.")

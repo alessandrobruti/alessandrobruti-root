@@ -93,12 +93,14 @@ for r in range(3, RT):
     inc, ore, pers = w[f"Q{r}"].value, w[f"R{r}"].value, w[f"S{r}"].value
     if inc and not (ore and pers):
         buchi.append(f"{nome} (incontri={inc}, ore={ore}, persone={pers})")
+    if w[f"E{r}"].value == "In presenza" and not w[f"T{r}"].value:
+        buchi.append(f"{nome} (in presenza senza n. trasferte)")
 check("Fasi con incontri complete di durata e persone", not buchi,
       "; ".join(buchi) if buchi else "tutte complete")
 
 # 7 — le giornate di back office sono stime: devono esserci e va detto
-back = num(w[f"U{RT}"].value)
-front = num(w[f"T{RT}"].value)
+back = num(w[f"V{RT}"].value)
+front = num(w[f"U{RT}"].value)
 check("Back office valorizzato", back > 0,
       f"{back:g} giornate — sono STIME, il contratto non le quantifica "
       f"(front office calcolato: {front:g})")

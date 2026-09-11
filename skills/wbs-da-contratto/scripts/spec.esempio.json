@@ -105,7 +105,8 @@
       "owner": "Project Manager",
       "part": "Impresoft: 3 persone. Laica: Managing Director, Marketing Manager, CFO, CSO.",
       "deliv": "3 persone in presenza (1 RevOps Consultant Senior + 2 junior)",
-      "note": "Offerta § 6.2 — 6 ore, in presenza, UN SOLO incontro per entrambi i canali. gg back office: STIMA."
+      "note": "Offerta § 6.2 — 6 ore, in presenza, UN SOLO incontro per entrambi i canali. gg back office: STIMA.",
+      "trasf": 1
     },
     {
       "fase": "Workshop #2 — ICP, target group e customer journey",
@@ -126,7 +127,8 @@
       "owner": "Project Manager",
       "part": "Impresoft: 3 persone. Laica: Managing Director, Marketing Manager, CFO, CSO.",
       "deliv": "3 persone in presenza × 2 sessioni (1 RevOps Consultant Senior + 2 junior)",
-      "note": "Offerta § 6.3 — 12 ore complessive: 2 workshop dedicati (B2B + B2C) di circa 6 ore ciascuno, in presenza. È la fase più pesante del progetto. gg back office: STIMA."
+      "note": "Offerta § 6.3 — 12 ore complessive: 2 workshop dedicati (B2B + B2C) di circa 6 ore ciascuno, in presenza. È la fase più pesante del progetto. gg back office: STIMA.",
+      "trasf": 2
     },
     {
       "fase": "Workshop #3 — Process design",
@@ -147,7 +149,8 @@
       "owner": "Project Manager",
       "part": "Impresoft: 3 persone. Laica: Marketing Manager, CSO, referente servizio clienti, key user operativi.",
       "deliv": "3 persone in presenza (1 RevOps Consultant Senior + 2 junior)",
-      "note": "Offerta § 6.4 — 6 ore, in presenza. Il perimetro contrattuale copre Marketing, Sales, Service e Operations. Nel contratto process design e user research sono un unico workshop: le interviste sono tenute su una riga a parte per separare i blocchi di progetto. gg back office: STIMA."
+      "note": "Offerta § 6.4 — 6 ore, in presenza. Il perimetro contrattuale copre Marketing, Sales, Service e Operations. Nel contratto process design e user research sono un unico workshop: le interviste sono tenute su una riga a parte per separare i blocchi di progetto. gg back office: STIMA.",
+      "trasf": 1
     },
     {
       "fase": "Interviste one-to-one — user research",
@@ -210,7 +213,8 @@
       "owner": "Project Manager",
       "part": "Impresoft: 3 persone. Laica: Managing Director, Marketing Manager, CFO, CSO, referente IT.",
       "deliv": "3 persone in presenza (1 RevOps Consultant Senior + 2 junior)",
-      "note": "Offerta § 6.6 — 6 ore, in presenza. Il contratto indica 4 risorse Impresoft sul § 6.6 (RevOps Consultant, CX Specialist, Integration Expert, PM): qui sono 3. La roadmap per wave non è una fase: è contenuto del report finale. gg back office: STIMA."
+      "note": "Offerta § 6.6 — 6 ore, in presenza. Il contratto indica 4 risorse Impresoft sul § 6.6 (RevOps Consultant, CX Specialist, Integration Expert, PM): qui sono 3. La roadmap per wave non è una fase: è contenuto del report finale. gg back office: STIMA.",
+      "trasf": 1
     },
     {
       "fase": "Review con il cliente",
@@ -273,7 +277,8 @@
       "owner": "Project Manager",
       "part": "Impresoft: 3 persone. Laica: Managing Director, Marketing Manager, CFO, CSO, referente IT.",
       "deliv": "3 persone in presenza (1 RevOps Consultant Senior + 2 junior)",
-      "note": "Offerta § 6.6 — 2 ore, in presenza, circa 15 giorni dopo il Workshop #5. VINCOLO DI PIANIFICAZIONE da rispettare nella colonna «Sett. inizio». gg back office: STIMA."
+      "note": "Offerta § 6.6 — 2 ore, in presenza, circa 15 giorni dopo il Workshop #5. VINCOLO DI PIANIFICAZIONE da rispettare nella colonna «Sett. inizio». gg back office: STIMA.",
+      "trasf": 1
     },
     {
       "fase": "Redazione output in lingua inglese",

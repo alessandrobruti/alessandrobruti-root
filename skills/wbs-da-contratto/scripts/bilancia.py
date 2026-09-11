@@ -60,10 +60,11 @@ def conta(pers_override=None, back_scale=None, ore_viaggio=None,
             pers = pers_override
         front += inc * ore * pers / ORE
         back += (f.get("back") or 0) * (back_scale if back_scale is not None else 1)
-        if f.get("mod") == "In presenza" and inc and pers:
-            viaggio += inc * pers * hv / ORE
-            sessioni += inc
-            pers_sess += inc * pers
+        trasf = f.get("trasf") if f.get("trasf") is not None else inc
+        if f.get("mod") == "In presenza" and trasf and pers:
+            viaggio += trasf * pers * hv / ORE
+            sessioni += trasf
+            pers_sess += trasf * pers
 
     auto = math.ceil(pers_sess / p_auto) if pers_sess else 0
     trasf = auto * km * km_aci() + auto * ped + pers_sess * vit
@@ -110,7 +111,7 @@ print(f"  Giornate            front {base['front']:.2f}   back {base['back']:.2f
       f"viaggio {base['viaggio']:.2f}   →  totale {base['tot']:.2f}  ({base['ore']:.1f} h)")
 print(f"  Costo giornate      {eur(base['costo_giornate']):>14}")
 print(f"  Costo trasferte     {eur(base['trasferte']):>14}   "
-      f"({base['sessioni']} sessioni, {base['pers_sess']} presenze, {base['auto']} viaggi auto)")
+      f"({base['sessioni']} trasferte, {base['pers_sess']} presenze, {base['auto']} viaggi auto)")
 print(f"  COSTO PIENO         {eur(base['pieno']):>14}")
 print(f"  Investimento        {eur(INV):>14}")
 pct = base["margine"] / INV if INV else 0
