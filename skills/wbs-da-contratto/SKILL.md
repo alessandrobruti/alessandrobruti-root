@@ -1,6 +1,6 @@
 ---
 name: wbs-da-contratto
-description: Costruisce una Work Breakdown Structure Excel — fasi, impegno in giornate-uomo, costi, margine, Gantt settimanale — partendo da un'offerta tecnico-economica o da un contratto di servizi. Legge il contratto, ricava da ogni fase modalità, numero di sessioni, durata e risorse, calcola le giornate front office e di viaggio con formule vive, e produce un file a cinque fogli editabile al desktop. Usa SEMPRE questa skill quando l'utente allega un'offerta, un contratto, un preventivo o un capitolato e chiede una WBS, un piano di lavoro, una pianificazione, un Gantt, "quantificami le giornate", "quanto ci mettiamo", "quanto ci costa questo progetto" o "che margine ha". Usala anche quando chiede di verificare se un progetto già venduto sta in piedi — se le giornate, il lead time e il prezzo sono coerenti fra loro — o di confrontare un piano esistente con quello che il contratto dice davvero. Vale per progetti di consulenza, assessment, system integration e delivery a corpo, non solo RevOps.
+description: Costruisce una Work Breakdown Structure Excel — fasi, impegno in giornate-uomo, costi, margine, Gantt settimanale — partendo da un'offerta tecnico-economica, da un contratto di servizi o dalla presentazione che li accompagna. Legge i documenti, ricava da ogni fase modalità, numero di sessioni, durata e risorse, poi SI FERMA E CHIEDE i parametri che i documenti non contengono o che non tornano — giornate di lavoro interno, tariffe, distanze, pedaggi, pasti — perché senza quelli il margine non si può calcolare. Infine produce un file a cinque fogli editabile al desktop e aiuta a bilanciare il numero finale fra giornate, tariffe e costi di trasferta. Usa SEMPRE questa skill quando l'utente allega un'offerta, un contratto, un preventivo o un capitolato e chiede una WBS, un piano di lavoro, una pianificazione, un Gantt, "quantificami le giornate", "quanto ci mettiamo", "quanto ci costa questo progetto" o "che margine ha". Usala anche quando chiede di verificare se un progetto già venduto sta in piedi — se le giornate, il lead time e il prezzo sono coerenti fra loro — di capire «che margine ci resta», di far quadrare un conto che non torna, o di confrontare un piano esistente con quello che il contratto dice davvero. Vale per progetti di consulenza, assessment, system integration e delivery a corpo, non solo RevOps.
 ---
 
 # WBS da contratto
@@ -17,18 +17,25 @@ interno.** Ti dirà che il workshop dura 6 ore, che le sessioni in presenza sono
 l'investimento è di 27.000 euro. Non ti dirà quante giornate servono per scrivere il
 report finale.
 
-Da qui la regola operativa: **le giornate front office e di viaggio si calcolano, le
-giornate di back office si stimano e si dichiarano come stime.** Nel file questa
-distinzione è strutturale — le prime sono formule, le seconde sono l'unico input di
-effort — e va detta anche a voce quando consegni. Un back office silenziosamente inventato
-è il modo più rapido per far sembrare solido un progetto che non lo è.
+Da qui due conseguenze operative. La prima: **le giornate front office e di viaggio si
+calcolano, le giornate di back office si stimano e si dichiarano come stime.** Nel file la
+distinzione è strutturale — le prime sono formule, le seconde sono l'unico input di effort.
+
+La seconda: **prima di generare il file, ci si ferma e si chiede.** Le stime che riguardano
+il 50% del costo non le fai tu: le propone e le fa correggere chi eroga il progetto. Un
+back office silenziosamente inventato è il modo più rapido per far sembrare solido un
+progetto che non lo è, e il passo 2 di questo flusso esiste per impedirlo.
 
 ## Flusso di lavoro
 
-### 1. Leggi il contratto e ricava la struttura delle fasi
+### 1. Leggi i documenti e ricava la struttura delle fasi
 
-Apri il documento (`references/lettura-contratto.md` spiega dove guardare e cosa cercare,
-comprese le voci che i contratti di servizi nascondono in capitoli diversi). Per ogni fase
+Apri tutto quello che c'è: l'offerta o il contratto, e la presentazione che l'ha
+accompagnata se esiste. I due documenti si completano — il contratto fissa ore, sessioni e
+prezzo, la presentazione spesso spiega meglio cosa succede dentro ogni fase e con chi, ed è
+la fonte migliore per le descrizioni. Quando divergono vince il contratto, ed è una
+divergenza da segnalare. `references/lettura-contratto.md` spiega dove guardare e cosa
+cercare, comprese le voci che i contratti di servizi nascondono in capitoli diversi. Per ogni fase
 ti servono: modalità, numero di sessioni, durata in ore, numero di risorse, deliverable,
 partecipanti per parte.
 
@@ -37,7 +44,55 @@ progetto Laica e funge da modello. Per ogni campo che il contratto non copre, sc
 stima nel campo e dichiarala nel campo `note` della fase: quelle note finiscono in una
 colonna del file e sono ciò che protegge chi lo leggerà dopo di te.
 
-### 2. Genera il file
+### 2. Fermati e chiedi i parametri che mancano
+
+Questo è il passo che distingue una WBS utile da un esercizio. A questo punto hai le ore
+erogate al cliente, che sono nel contratto; **non hai niente di ciò che determina il
+margine**, perché il lavoro interno, le distanze e le abitudini di trasferta non stanno in
+nessun documento.
+
+Non stimare in silenzio e non generare il file: presenta una **scheda parametri** e chiedi.
+Un giro solo, con i valori proposti già dentro, così chi risponde può scrivere «ok tranne
+il terzo, metti 8».
+
+La scheda ha tre parti, in questo ordine:
+
+**a) La prima lettura del margine con i default.** Due righe: costo pieno e margine. Serve a
+far capire perché le domande contano. Se il margine esce al 2% con le tue stime, la
+conversazione cambia natura.
+
+**b) I parametri da confermare**, con accanto **da dove viene il valore proposto** — letto
+nel contratto, dedotto dagli indirizzi, stima tua. È l'informazione che permette di capire
+a quali righe prestare attenzione.
+
+| Parametro | Proposto | Da dove viene |
+|---|---|---|
+| gg back office, fase per fase | 3,0 / 1,5 / 2,0 … | stima dai deliverable elencati |
+| Persone per sessione | 3 | § 6.2 ne indica 2 — da confermare quale vale |
+| Tariffe front / back / viaggio | — | non nei documenti |
+| Sede degli incontri | cliente | il § 10.1 lascia scegliere fra le due sedi |
+| Km a/r e ore di viaggio | 50 km · 1 h | dedotti dagli indirizzi al § 10.1 |
+| Pedaggi · vitto | 0 € · 20 € | stima: tratta ordinaria, un pasto a testa |
+
+**c) Le incoerenze del contratto**, che sono una cosa diversa da un parametro mancante: qui
+il documento dice due cose in contrasto e non spetta a te scegliere. Durate dichiarate due
+volte con numeri diversi, deliverable obbligatori la cui lavorazione è esclusa dal
+perimetro, vincoli di sequenza che rendono impossibile la durata venduta.
+
+`references/parametri-da-chiedere.md` ha la lista completa, i default di partenza e il peso
+tipico di ciascuna voce. Leggilo: l'ordine in cui chiedi conta più di quante cose chiedi.
+
+**Una cosa da sapere prima di iniziare a chiedere**, perché orienta tutta la conversazione:
+su un progetto di consulenza le giornate di back office pesano il 40-50% del costo pieno,
+le ore erogate un altro 40-45%, e **pedaggi, chilometri e pasti insieme l'1-3%**. Chi
+affronta il problema dal lato delle spese di trasferta sta guardando la leva sbagliata, e
+va detto. Le due leve vere sono il lavoro interno e il numero di persone per sessione.
+
+Per le scelte binarie o con poche opzioni — sede degli incontri, se si viaggia insieme, se
+il vitto è pieno — conviene usare uno strumento di domanda strutturata se la sessione ce
+l'ha: si risponde con un clic. Per i numeri, la tabella è più rapida.
+
+### 3. Genera il file
 
 ```bash
 python3 scripts/build_wbs.py spec.json --out "NOME_FILE.xlsx"
@@ -48,7 +103,7 @@ formule, la formattazione condizionale e l'identità visiva. Non riscriverlo a m
 stato validato e contiene le correzioni a un paio di trappole di openpyxl che costano
 mezz'ora a riscoprire (sono documentate in testa al file).
 
-### 3. Verifica, che è la parte che distingue un file utile da un file plausibile
+### 4. Verifica, che è la parte che distingue un file utile da un file plausibile
 
 Una ricalcolata pulita dimostra che le formule *valutano*, non che i numeri sono *giusti*.
 Fai girare i controlli di quadratura:
@@ -65,7 +120,26 @@ quali sono errori tuoi e quali sono crepe nel contratto.
 Il ricalcolo va fatto **su una copia**: LibreOffice, riscrivendo il file, inietta nei fogli
 di stile record fuori palette e sostituzioni di font. Si consegna l'originale.
 
-### 4. Riporta gli scostamenti, non solo il file
+### 5. Bilancia il numero finale
+
+Se il margine non arriva dove deve, non limare le stime finché il file quadra: è il modo
+più rapido per consegnare un progetto che non sta in piedi, e il conto si presenta comunque
+tre mesi dopo. Usa invece:
+
+```bash
+python3 scripts/bilancia.py spec.json --target 0.25
+```
+
+Dice quanto pesa ogni voce sul costo pieno e, per ogni leva, **quale valore servirebbe per
+arrivare al margine obiettivo tenendo fermo il resto** — «le giornate di back office
+dovrebbero scendere da 18,6 a 8,7», «servirebbero 1,5 persone per sessione invece di 3».
+Le leve che «non bastano da sola» sono quelle su cui è inutile discutere.
+
+Porta questi numeri alla conversazione, non una stima già aggiustata. La differenza è che
+il primo fa prendere una decisione — tagliamo il back office, andiamo in due, rinegoziamo,
+accettiamo il margine — mentre il secondo la rimanda a progetto avviato.
+
+### 6. Riporta gli scostamenti, non solo il file
 
 Il valore di questo lavoro non è il file: è la lista di cose che non tornano. Consegna
 sempre, insieme al file, un riepilogo in chat di:
@@ -139,7 +213,9 @@ di regalare e una che si è persa per distrazione.
 ## File di riferimento
 
 - `references/lettura-contratto.md` — dove stanno le informazioni in un'offerta tecnico-economica, cosa estrarre e le voci che si trovano solo cercandole
+- `references/parametri-da-chiedere.md` — cosa chiedere, con i default di partenza e il peso reale di ogni voce sul costo pieno
 - `references/controlli.md` — i controlli di quadratura, cosa significa ogni scostamento, e come si legge il margine
 - `scripts/build_wbs.py` — il generatore. Legge `spec.json`, scrive il workbook
 - `scripts/spec.esempio.json` — specifica completa di un progetto reale, da usare come modello
 - `scripts/verifica.py` — i controlli di quadratura in forma eseguibile
+- `scripts/bilancia.py` — peso di ogni voce sul costo pieno e, per ogni leva, il valore che serve a centrare il margine obiettivo

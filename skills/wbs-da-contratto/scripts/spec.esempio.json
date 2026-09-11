@@ -23,7 +23,8 @@
     "aci_eur_km": 0.65,
     "pedaggi": 6,
     "vitto": 20,
-    "persone_auto": 3
+    "persone_auto": 3,
+    "margine_minimo": 0.2
   },
   "ruoli": [
     {

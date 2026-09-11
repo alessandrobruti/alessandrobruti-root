@@ -8,6 +8,7 @@ Sviluppata sul progetto Laica S.p.A. (`wbs-assessment/` in questo repo):
 riproduce identica sui valori chiave, così la skill ha un test di regressione reale.
 
 ```bash
+python3 scripts/bilancia.py scripts/spec.esempio.json --target 0.25   # prima: il conto torna?
 python3 scripts/build_wbs.py scripts/spec.esempio.json --out prova.xlsx
 cp prova.xlsx /tmp/v.xlsx && python3 <xlsx-skill>/scripts/recalc.py /tmp/v.xlsx 300
 python3 scripts/verifica.py /tmp/v.xlsx --spec scripts/spec.esempio.json
