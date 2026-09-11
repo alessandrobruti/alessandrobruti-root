@@ -1,6 +1,6 @@
 # WBS — RevOps Assessment B2B e B2C · Laica S.p.A.
 
-`WBS_Assessment_GTM.xlsx` è il file di lavoro da editare al desktop.
+`260803_LAICA_WBS_RevOps_Assessment_V.1.1.xlsx` è il file di lavoro da editare al desktop.
 `build_wbs.py` lo rigenera da zero (`python3 build_wbs.py`) — sovrascrive il file,
 quindi non usarlo dopo aver iniziato a compilare a mano.
 
@@ -12,10 +12,32 @@ Modalità, ore e numero di sessioni di ogni fase sono letti dal capitolo 6 del c
 | Foglio | Contenuto |
 |---|---|
 | **WBS** | Le 11 fasi, una per riga. Intestazione gialla = da compilare, celle grigie = calcolate |
-| **Timeline** | Gantt per settimana, si disegna da sé dalle settimane impostate nella WBS |
+| **Timeline** | Gantt per settimana, si disegna da sé dalle settimane impostate nella WBS. In alto la settimana ISO di partenza: unico comando per spostare il piano sul calendario |
 | **Riepilogo** | Impegno, costo giornate, costo trasferte, costo pieno e margine, lead time, punti aperti |
 | **Parametri** | Ore/giornata, tre tariffe orarie, ore di viaggio, investimento, costi di trasferta |
 | **Ruoli** | Mappatura ruolo → nome del team di progetto |
+
+## Settimane relative e shift sul calendario
+
+La WBS ragiona **sempre in settimane relative**: il progetto parte dalla settimana 1
+e il lead time si misura da lì. La settimana di calendario reale si imposta in **una
+sola cella**, in alto nel foglio Timeline (`F2`, gialla): la settimana 1 diventa quella,
+e le etichette di colonna e la fascia dei mesi si spostano di conseguenza. Le barre non
+si muovono, perché dipendono dalle settimane relative della WBS.
+
+Serve a fare proiezioni: settimana 41 → il piano chiude alla 50; settimana 50 → chiude
+alla 59, con la fascia dei mesi che rotola correttamente su *Gennaio 2027*. L'anno di
+riferimento sta nei Parametri e serve a ricavare i mesi.
+
+Il mese si ricava dal lunedì della settimana ISO:
+`DATE(anno,1,4) - WEEKDAY(DATE(anno,1,4),3) + 7*(settimana-1)` — il 4 gennaio cade
+sempre nella settimana ISO 1, e `WEEKDAY(...,3)` vale 0 di lunedì. La formula regge i
+numeri oltre la 52: rotola nell'anno successivo, che è il comportamento voluto.
+
+La fascia dei mesi usa le **sigle di tre lettere** su ogni settimana, non il nome intero
+centrato sul gruppo: una cella con formula che restituisce `""` non è vuota per Excel e
+blocca lo sbordo del testo, quindi un nome lungo resterebbe tagliato. I nomi per intero,
+con gli anni, stanno nella riga «Periodo di calendario coperto».
 
 ## Come si calcola l'impegno
 
@@ -35,11 +57,11 @@ Le colonne giornate esprimono **giornate-uomo aggregate**, non giorni di calenda
 
 ## Da compilare
 
-1. Le tre **tariffe orarie** (front / back / viaggio) nel foglio Parametri — finché sono vuote tutti i costi valgono 0
-2. **Vitto** €/persona/trasferta, e i pedaggi se il percorso prevede autostrada
-3. **Durata** dell'incontro di review con il cliente (fase 8), oggi vuota
-4. **Nomi** del team nel foglio Ruoli
-5. Verifica delle **giornate back office**: sono stime, il contratto non le quantifica
+1. **Nomi** mancanti nel foglio Ruoli (Project Manager e i due junior)
+2. Verifica delle **giornate back office**: sono stime, il contratto non le quantifica
+3. La **settimana ISO di partenza** nel foglio Timeline, quando il kick-off è schedulato
+
+Tariffe (95 / 85 / 75 €/h), ore di viaggio, pedaggi e vitto sono già compilati.
 
 ## Costo delle trasferte
 
@@ -73,6 +95,13 @@ non vengono disegnate.
 
 Attenzione anche alle fasce a piena larghezza: se una fascia unita copre una colonna in
 cui poi si scrive un totale, la cella è `MergedCell` e non è scrivibile.
+
+### Struttura delle righe
+
+Titolo in riga 1, intestazioni in riga 2, dati dalla riga 3. Le righe di legenda sono
+state rimosse: quelle informazioni vivono nei **commenti delle intestazioni di colonna**,
+dove non occupano spazio. Se aggiungi righe di testo sopra la tabella, tutti i
+riferimenti degli altri fogli si spostano.
 
 ### Nota sul ricalcolo
 
