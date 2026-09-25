@@ -1,0 +1,554 @@
+<!doctype html><html lang='it'><head><meta charset='utf-8'><title>Laica Dossier RevOps</title><style>
+@page { size: A4; margin: 14mm 13mm 16mm 13mm; }
+body { font-family: Manrope, Arial, sans-serif; color:#000; font-size: 9.2pt; line-height: 1.42; background:#fff; }
+h1 { font-weight: 800; font-size: 22pt; margin: 0 0 4pt; border-left: 10px solid #FDC300; padding-left: 10px; }
+h2 { font-weight: 700; font-size: 14pt; margin: 18pt 0 6pt; padding-bottom: 3pt; border-bottom: 3px solid #FDC300; page-break-after: avoid; }
+h3 { font-weight: 600; font-size: 11pt; margin: 12pt 0 4pt; page-break-after: avoid; }
+table { border-collapse: collapse; width: 100%; margin: 6pt 0 10pt; font-size: 8pt; page-break-inside: auto; }
+tr { page-break-inside: avoid; }
+th { background: #000; color: #fff; text-align: left; padding: 4pt 5pt; font-weight: 600; }
+td { border-bottom: 1px solid #DCDCDC; padding: 3.5pt 5pt; vertical-align: top; }
+tr:nth-child(even) td { background: #F4F4F4; }
+img { width: 100%; max-width: 100%; margin: 6pt 0; page-break-inside: avoid; }
+pre { background: #F4F4F4; border-left: 4px solid #FDC300; padding: 6pt 8pt; font-size: 6.9pt; line-height: 1.3; overflow: hidden; white-space: pre; page-break-inside: avoid; }
+code { font-family: 'Roboto Mono', monospace; font-size: 8pt; }
+hr { border: 0; border-top: 1px solid #DCDCDC; margin: 12pt 0; }
+strong { font-weight: 700; }
+em { color: #3A3A3A; }
+</style></head><body><h1>Laica S.p.A.: dossier, settore e piano di raccolta dati</h1>
+<p><strong>RevOps assessment B2B/B2C · Impresoft Engage · 25/09/2026</strong>, preparato per il kick-off cliente del 02/10/2026.</p>
+<p><em>Uso interno.</em> Tra parentesi quadre il livello di confidenza delle affermazioni: <strong>A</strong> documentale · <strong>B</strong> dichiarato dall'owner · <strong>C</strong> riportato indirettamente · <strong>D</strong> stima Impresoft · <strong>E</strong> conflitto o dato ignoto. Il dettaglio di ogni affermazione è in <code>Registro_Affermazioni.md</code>.</p>
+<hr />
+<h2>0. Executive summary</h2>
+<p><img alt="Ricavi" src="Report/img/09_ricavi.png" /></p>
+<table>
+<thead>
+<tr>
+<th>5 insight</th>
+<th>5 rischi</th>
+<th>5 ipotesi da validare con i dati</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>1.</strong> Laica fattura circa €25m ed è ferma rispetto al 2019 (€20,4m) [A/C]. La divisione Strix CG torna a crescere (+12%) <strong>grazie all'OEM</strong>, non al brand [A]</td>
+<td><strong>1.</strong> Nessun dato del cliente è ancora stato verificato su un sistema: tutti i pain sono dichiarati [B/C]</td>
+<td><strong>H1.</strong> La maggior parte del margine perso sta in Amazon (38-40% + ADS) e non nel D2C</td>
+</tr>
+<tr>
+<td><strong>2.</strong> Il business è <strong>B2B2C</strong>: circa 95% tra retail/GDO, OEM e forse Vendor; circa 5% online [B, definizione instabile]</td>
+<td><strong>2.</strong> WBS con <strong>margine 0,0%</strong> (€26.996,5 di costo su €27.000): non c'è spazio per un secondo giro di richieste dati [A]</td>
+<td><strong>H2.</strong> Il sottovuoto, non la filtrazione, genera il 66% dei ticket: l'automazione CS parte da lì</td>
+</tr>
+<tr>
+<td><strong>3.</strong> Il cliente finale non è di Laica: Amazon intermedia il B2C e HubSpot è una rubrica (20.000 anagrafiche, 15.820 con consenso) [B]</td>
+<td><strong>3.</strong> Nuovo CEO Strix dal 13/07 e revisione strategica in corso: il budget del piano triennale non è garantito [A]</td>
+<td><strong>H3.</strong> Il valore D2C sta nel <strong>riacquisto dei filtri</strong> (LTV), non nel margine della prima vendita</td>
+</tr>
+<tr>
+<td><strong>4.</strong> Il customer service è un collo di bottiglia misurabile: 6.435 ticket, 3,3-9,1 gg di risposta, 1 persona, nessun tool [B]</td>
+<td><strong>4.</strong> Conflitti tra fonti su D2C hardware, integrazione ERP e mix canali (9 claim di livello E)</td>
+<td><strong>H4.</strong> L'OEM, cioè la vera crescita, non ha né pipeline né CRM: il Revenue Model B2B pesa più del B2C</td>
+</tr>
+<tr>
+<td><strong>5.</strong> L'innovazione (PFAS, compatibili Brita) arriva sul mercato con 6 mesi di ritardo: è un problema di filiera dei contenuti (niente PIM), non solo di marketing [B]</td>
+<td><strong>5.</strong> Aspettative incompatibili: Milich vuole il D2C subito, ma manca un 3PL; lo SPICED dice FY29/30</td>
+<td><strong>H5.</strong> Il 150 k€ di "riattivazione DB" è sovrastimato: base con consenso 15.820, riacquisto al 25% non verificato</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Cosa serve entro il 09/10:</strong> 49 richieste, di cui 29 Must, divise tra 9 referenti. 24 sono export diretti da sistemi noti (JGalileo, HubSpot, WooCommerce, Seller/Vendor Central, Amazon Ads); 25 sono domande di discovery. Vedi §7 e <code>Data_Request_LAica.xlsx</code>.</p>
+<hr />
+<h2>1. Fonti e affidabilità</h2>
+<p><img alt="Fonti" src="Report/img/11_fonti.png" /></p>
+<table>
+<thead>
+<tr>
+<th>Fonte</th>
+<th>Tipo</th>
+<th>Chi parla</th>
+<th>Accesso</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>4 call con il cliente (23/03, 01/04, 15/07, 03/08) + telefonata 20/07</td>
+<td>Bluedot</td>
+<td>RD, NZ, EB, MM ↔ CAC, AB</td>
+<td><strong>Negato</strong> (le registrazioni sono di Campione) → uso i Meeting report IE</td>
+</tr>
+<tr>
+<td>Risposte scritte al questionario (email NZ del 02/09, con EB e MM)</td>
+<td>docx + ZIP</td>
+<td>NZ, EB, MM</td>
+<td>Allegati <strong>non scaricabili</strong> → numeri presi dallo SPICED del 07/09</td>
+</tr>
+<tr>
+<td>Meeting report, SPICED, presentazione 03/08, offerta firmata, WBS V1.1</td>
+<td>Drive</td>
+<td>IE</td>
+<td>Letti integralmente (<code>_sources/drive/</code>)</td>
+</tr>
+<tr>
+<td>Call interne 21/07, 31/07, KOI 25/09</td>
+<td>Bluedot → <code>Transcript/</code></td>
+<td>CAC, AB, AM, VM</td>
+<td>Trascritte integralmente</td>
+</tr>
+<tr>
+<td>Bilanci, RNS Strix, tariffari Amazon, competitor</td>
+<td>Web</td>
+<td>—</td>
+<td>Estratti di ricerca (<code>_sources/web/</code>), da confermare sul documento originale</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Nota:</strong> il KOI ripete i numeri dello SPICED a memoria e ne sbaglia 6 (tabella in fondo al registro). Per il kick-off valgono lo SPICED e le risposte scritte.</p>
+<hr />
+<h2>2. Dossier azienda</h2>
+<h3>2.1 Identità e gruppo</h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Società</td>
+<td>LAICA S.p.A., P.IVA 00288500242, Barbarano Mossano (VI), socio unico, capitale €1m [A]</td>
+</tr>
+<tr>
+<td>Storia</td>
+<td>Fondata nel 1974 dalla famiglia Moretto ("Lavorazione Italiana Casalinghi"); seconda generazione e reparto R&amp;D dal 1992; filiali in Taiwan (2007) e Spagna (2017) [A web]</td>
+</tr>
+<tr>
+<td>Proprietà</td>
+<td>Strix Group PLC (AIM: KETL) dal 26/10/2020, per €19,6m più earn-out fino a €12m [A]</td>
+</tr>
+<tr>
+<td>Divisione</td>
+<td>Strix Consumer Goods (Laica, Aqua Optima UK, OEM, produzione in Cina): circa £34m su 12 mesi, circa 1/3 del gruppo [A/B]</td>
+</tr>
+<tr>
+<td>Contesto del gruppo</td>
+<td>Billi venduta per £110m (01/2026), cassa netta £38,7m, nuovo CEO <strong>Andy Rainforth</strong> dal 13/07/2026, revisione strategica in corso [A]</td>
+</tr>
+<tr>
+<td>Perimetro dell'assessment</td>
+<td>Solo Laica S.p.A. e il brand Laica; esclusi Aqua Optima e Taiwan (RD, 20/07) [B]</td>
+</tr>
+</tbody>
+</table>
+<h3>2.2 Come genera valore</h3>
+<pre><code>R&amp;D Italia (&gt;100 brevetti, filtri bi-flux, PFAS)  →  Produzione Cina / filtri Made in Italy  →  4 motion di ricavo
+                                                                                              │
+   ┌───────────────────────┬──────────────────────────┬──────────────────────────┬───────────┴────────────┐
+   │ RETAIL/GDO (B2B2C)    │ OEM WHITE LABEL (B2B)    │ AMAZON Vendor/Seller     │ SHOP D2C               │
+   │ 10 agenzie IT, KA     │ prodotti su misura       │ IT ~tutto; FR/DE/ES/PL   │ solo ricambi e         │
+   │ Unieuro/MediaWorld,   │ (baby, filtri bespoke)   │ &quot;per vedere se vende&quot;    │ consumabili;           │
+   │ Tesco; distributori   │ deal 250k–4M€, 1–3 anni  │ 18% + 20-22% + ADS       │ 16 ordini/mese         │
+   │ → volume, poco dato   │ → crescita, zero promo   │ → reach, niente dato     │ → dato, niente volume  │
+   └───────────────────────┴──────────────────────────┴──────────────────────────┴────────────────────────┘
+        ricorrenza: filtri e sacchetti sottovuoto (consumabili) → oggi catturata da Amazon e dai compatibili
+</code></pre>
+<p><strong>Proposta di valore dichiarata:</strong> "Well-being at home", unica realtà che offre insieme filtrazione e piccoli elettrodomestici wellness/kitchen [B]. Nell'health (misuratori di pressione, dispositivi medici con codice Minsan) si scontra con Omron e Beurer. Il posizionamento esiste nei documenti interni ma non è comunicato al mercato (RD, 23/03) [B].</p>
+<p><img alt="Mix" src="Report/img/01_mix_ricavi.png" /></p>
+<h3>2.3 GTM as-is</h3>
+<table>
+<thead>
+<tr>
+<th>Area</th>
+<th>Stato</th>
+<th>Conf.</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Vendite B2B</td>
+<td>Italia: 5 agenzie per l'elettronica di consumo, 5 per il DIY, direzione diretta sui KA; UK: KA diretti (Tesco); Spagna: Sales Manager e agenzie; altri paesi: distributori. Ordini via email, portale B2B proprietario o EDI Vendor</td>
+<td>B</td>
+</tr>
+<tr>
+<td>OEM</td>
+<td>Nessuna promozione ("non spendiamo niente", RD); nessun CRM; ciclo 1-3 anni</td>
+<td>B</td>
+</tr>
+<tr>
+<td>Marketing</td>
+<td>Bellero (in azienda da 01/2026), agenzia MoMA ritenuta insoddisfacente, 99% del budget sul brand Laica, 40% del tempo sulla manutenzione dei canali</td>
+<td>B</td>
+</tr>
+<tr>
+<td>Amazon</td>
+<td>5 persone decidono senza coordinamento; AMS 595 k€/anno; 40 h/mese di promozioni manuali; il Seller è usato come leva negoziale contro il Vendor</td>
+<td>B</td>
+</tr>
+<tr>
+<td>Customer service</td>
+<td>1 persona (Zen) per il diretto, 2 per Amazon; email e form, nessuna chat né automazione</td>
+<td>B</td>
+</tr>
+<tr>
+<td>Dato</td>
+<td>Nessun PIM, DAM o CDP; progetto PIM e progetto AI di previsione vendite bloccati da dati sporchi</td>
+<td>B</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Tech stack</strong></p>
+<table>
+<thead>
+<tr>
+<th>Sistema</th>
+<th>Uso</th>
+<th>Integrazione</th>
+<th>Owner</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ERP JGalileo (SanMarco Informatica)</td>
+<td>Ordini, fatture, anagrafiche</td>
+<td>Seller: <strong>live</strong> (NZ) o <strong>CSV</strong> (SPICED) [E]; Vendor: CSV</td>
+<td>Sella / Amm.</td>
+</tr>
+<tr>
+<td>HubSpot</td>
+<td>Rubrica consumatori IT, circa 20.000 contatti</td>
+<td>Nessuna</td>
+<td>Marketing</td>
+</tr>
+<tr>
+<td>WordPress + WooCommerce</td>
+<td>Sito e shop ricambi, 2 k€/anno</td>
+<td>Nessuna con ERP</td>
+<td>Marketing</td>
+</tr>
+<tr>
+<td>Portale B2B proprietario</td>
+<td>Ordini dei distributori</td>
+<td>ERP?</td>
+<td>IT</td>
+</tr>
+<tr>
+<td>Seller Central, Vendor Central, Amazon Ads</td>
+<td>Marketplace</td>
+<td>CSV</td>
+<td>Contin</td>
+</tr>
+<tr>
+<td>App mobile (sviluppata in Cina)</td>
+<td>Device connessi</td>
+<td>?</td>
+<td>?</td>
+</tr>
+<tr>
+<td>Customer service</td>
+<td>Email e form (tool <strong>ignoto</strong>)</td>
+<td>Nessuna</td>
+<td>Zen</td>
+</tr>
+</tbody>
+</table>
+<h3>2.4 Stakeholder e SPICED</h3>
+<p><img alt="Stakeholder" src="Report/img/08_stakeholder.png" /></p>
+<table>
+<thead>
+<tr>
+<th>S</th>
+<th>P</th>
+<th>I</th>
+<th>C</th>
+<th>D</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Circa €25m, 95% B2B2C/OEM, piano 04/26–03/29 per l'Europa, cassa disponibile nel gruppo</td>
+<td>Il cliente non è di Laica (Amazon); dato disordinato; CS manuale; go-to-market lento; OEM senza metodo</td>
+<td>Margine Amazon 38-40%+ADS; LTV dei filtri perso a favore dei compatibili; 1 FTE CS; quota PFAS ceduta a Philips</td>
+<td>Assessment da consegnare entro la W49 per il budget dell'anno fiscale; finestra di governance aperta dal cambio CEO Strix</td>
+<td>Economic buyer RD, validatore NZ (payback ≤24m), influencer EB e MM; contratto firmato il 28/08</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>3. Dove si perde valore (dati dichiarati)</h2>
+<p><img alt="Bow tie" src="Report/img/06_bowtie_asis.png" />
+<img alt="CS" src="Report/img/02_customer_service.png" />
+<img alt="Funnel" src="Report/img/03_funnel_ecommerce.png" />
+<img alt="Amazon" src="Report/img/04_amazon_costo.png" />
+<img alt="Ipotesi" src="Report/img/05_ipotesi_valore.png" /></p>
+<p><strong>Come leggerli:</strong>
+- I dati CS ed e-commerce sono coerenti al loro interno, quindi probabilmente estratti da un sistema: vanno solo confermati.
+- I dati economici Amazon e il business case no. Il fatturato Seller, Vendor e D2C in euro è il dato mancante che blocca ogni calcolo di ROI (K01, K32, K33).</p>
+<hr />
+<h2>4. Settore e competitor</h2>
+<h3>4.1 Mercato</h3>
+<table>
+<thead>
+<tr>
+<th>Segmento</th>
+<th>Dimensione / trend</th>
+<th>Conf.</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Caraffe filtranti (mondo)</td>
+<td>USD 0,9-3,5bn, CAGR 5-9%; Europa oltre il 40%; Germania primo mercato</td>
+<td>C</td>
+</tr>
+<tr>
+<td>Soluzioni filtranti Italia</td>
+<td>Mercato +150% dal 2018; le usano 39 italiani su 100, le caraffe 14 su 100 (Brita Italia)</td>
+<td>C</td>
+</tr>
+<tr>
+<td>Piccoli elettrodomestici Italia 2025</td>
+<td>circa €2,3bn, +5,2%, online al <strong>38,3%</strong></td>
+<td>B</td>
+</tr>
+<tr>
+<td>Misuratori di pressione Europa</td>
+<td>circa USD 1,1bn</td>
+<td>C</td>
+</tr>
+<tr>
+<td>E-commerce B2C Italia 2025</td>
+<td>€40bn di prodotti, penetrazione 11,2%; elettronica al 43%</td>
+<td>B</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Tre dinamiche che pesano su Laica:</strong>
+1. <strong>Guerra dei compatibili.</strong>
+   - Brita, Philips (Micro X-Clean), Wessper e Aqua Optima vendono filtri compatibili con altre caraffe.
+   - Laica risponde con il bi-flux universal "LAICA-Key", compatibile Brita.
+   - In Germania Brita ha ottenuto il divieto di pubblicizzare la compatibilità (causa contro Aqua Select) [B]: <strong>rischio legale sui claim in DE</strong>.
+2. <strong>Retail in consolidamento.</strong> Unieuro è passata a Fnac Darty; MediaWorld/Ceconomy va verso JD.com [B]. Il potere negoziale dei KA cresce.
+3. <strong>Amazon come porta d'ingresso nei nuovi paesi.</strong> Il Vendor chiede co-op del 5-15% e blocca le vendite durante la negoziazione (NZ) [B/C].</p>
+<h3>4.2 Competitor</h3>
+<p><img alt="Competitor" src="Report/img/10_competitor.png" /></p>
+<table>
+<thead>
+<tr>
+<th>Player</th>
+<th>Categoria</th>
+<th>Posizionamento / canali</th>
+<th>Differenziatore rispetto a Laica</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Brita</strong> (DE)</td>
+<td>Filtrazione</td>
+<td>Leader; GDO, Amazon, subscription; €691m</td>
+<td>Brand e potenza di comunicazione; brevetti sui compatibili</td>
+</tr>
+<tr>
+<td><strong>Philips water</strong> (licenziatari)</td>
+<td>Filtrazione + SDA</td>
+<td>Brand globale; primo a comunicare sul PFAS</td>
+<td>Notorietà; compatibili Brita/Laica</td>
+</tr>
+<tr>
+<td><strong>BWT</strong> (AT)</td>
+<td>Filtrazione</td>
+<td>Premium, cartucce al magnesio; circa €1bn</td>
+<td>Tecnologia e canale professionale</td>
+</tr>
+<tr>
+<td><strong>Aqua Optima</strong> (Strix, UK)</td>
+<td>Filtrazione</td>
+<td>Compatibili oltre il 90% delle caraffe; Tesco, Argos</td>
+<td>Stesso gruppo: rischio di cannibalizzazione in UK</td>
+</tr>
+<tr>
+<td><strong>Wessper</strong> (PL)</td>
+<td>Filtrazione</td>
+<td>Price fighter su Amazon, Leroy Merlin, Kaufland</td>
+<td>Prezzo (cfr. filtro cinese a €2,83 contro bi-flux a €5,37)</td>
+</tr>
+<tr>
+<td><strong>Omron</strong> (JP)</td>
+<td>Health</td>
+<td>Leader nei misuratori di pressione; farmacia</td>
+<td>Validazione clinica, brand medicale</td>
+</tr>
+<tr>
+<td><strong>Beurer</strong> (DE)</td>
+<td>Health / bilance</td>
+<td>€308m; ampia gamma</td>
+<td>Catalogo e distribuzione UE</td>
+</tr>
+<tr>
+<td><strong>Imetec/Tenacta</strong> (IT)</td>
+<td>SDA / beauty</td>
+<td>€126m (+37%)</td>
+<td>Forza in GDO Italia</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Lettura:</strong> Laica compete con player 10-40 volte più grandi su ciascuna categoria. Il suo vantaggio può stare solo in (a) R&amp;D e certificazioni (PFAS), (b) catalogo ibrido "well-being", (c) capacità OEM. Nessuno dei tre è misurato né comunicato oggi.</p>
+<hr />
+<h2>5. Come si struttura il GTM nelle aziende di questo tipo</h2>
+<p>Consumer durables, small appliances e brand B2B2C con OEM.</p>
+<table>
+<thead>
+<tr>
+<th>Funzione</th>
+<th>Benchmark di settore</th>
+<th>Laica oggi</th>
+<th>Gap</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Key Account / Trade</td>
+<td>KAM per insegna, JBP annuali, trade terms codificati, sell-out settimanale</td>
+<td>KA gestiti dalla direzione, agenzie plurimandatarie</td>
+<td>Nessun sell-out né trade spend misurato</td>
+</tr>
+<tr>
+<td>Category / Trade marketing</td>
+<td>Planogrammi, promo calendar, ROI promo</td>
+<td>40 h/mese di promo Amazon manuali</td>
+<td>Nessun calendario promo integrato tra retail e Amazon</td>
+</tr>
+<tr>
+<td>E-commerce e marketplace</td>
+<td>Team dedicato (Amazon 1P/3P, retail media, DTC), retail media ACoS/TACoS</td>
+<td>5 persone non coordinate</td>
+<td>Nessun owner unico, nessun P&amp;L di canale</td>
+</tr>
+<tr>
+<td>OEM / B2B BD</td>
+<td>Pipeline CRM, ABM, fiere, stage-gate progetto</td>
+<td>Nessun CRM, zero promozione</td>
+<td>Pipeline invisibile</td>
+</tr>
+<tr>
+<td>Customer care</td>
+<td>Omnicanale, ticketing, knowledge base, chat/AI, CSAT</td>
+<td>Email, 1 FTE, 3,3-9,1 gg</td>
+<td>Tool, KB, automazione</td>
+</tr>
+<tr>
+<td>Content/PIM</td>
+<td>PIM/DAM come fonte unica, syndication feed</td>
+<td>Niente PIM, mesi per una scheda</td>
+<td>Time-to-market</td>
+</tr>
+<tr>
+<td>RevOps / BI</td>
+<td>Data model unico cliente-ordine-prodotto, dashboard per canale</td>
+<td>Excel, dati "non azionabili"</td>
+<td>Tutto</td>
+</tr>
+</tbody>
+</table>
+<p><strong>KPI che guardano i best-in-class, confrontati con Laica:</strong></p>
+<table>
+<thead>
+<tr>
+<th>KPI</th>
+<th>Benchmark</th>
+<th>Laica</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Conversion rate e-commerce</td>
+<td>1-3% (Italia circa 1%) [C]</td>
+<td>Non misurato (0,08% non è un CR)</td>
+</tr>
+<tr>
+<td>Prima risposta via email</td>
+<td>Meno di 4 h i migliori, 7-12 h la media [C]</td>
+<td>3,3 gg email, 9,1 gg form</td>
+</tr>
+<tr>
+<td>TACoS Amazon</td>
+<td>5-10% prodotti maturi, 15-25% al lancio [C]</td>
+<td>Ignoto (595 k€ di spesa, GMV ignoto)</td>
+</tr>
+<tr>
+<td>OTIF verso retail</td>
+<td>95-98% (Walmart 98%) [C]</td>
+<td>Non misurato</td>
+</tr>
+<tr>
+<td>Trade spend</td>
+<td>Circa 20% dei ricavi; 59% delle promo in perdita [B]</td>
+<td>Non misurato</td>
+</tr>
+<tr>
+<td>Riacquisto dei consumabili</td>
+<td>KPI principale per i brand di filtrazione (subscription)</td>
+<td>Non misurato</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>6. Implicazioni per l'assessment</h2>
+<ol>
+<li><strong>Revenue Model B2B prima del B2C.</strong> Il 95% dei ricavi e la crescita (OEM) stanno lì. Senza export ERP per canale il WS#1 non si può fare.</li>
+<li><strong>Il B2C si gioca sui consumabili.</strong> Serve un journey Amazon → registrazione prodotto → riacquisto filtri su D2C. La KPI chiave è il tasso di riacquisto, non il conversion rate.</li>
+<li><strong>Il customer service è la prima quick win misurabile.</strong> Con l'export della casella email si classificano i ticket con l'AI e si costruisce la knowledge base (sottovuoto).</li>
+<li><strong>Il business case va ricostruito su dati.</strong> Le cifre di 150 k€ e 43,7 k€ restano ipotesi finché non arrivano K01, K33, K45 e K60.</li>
+<li><strong>Politica di canale.</strong> Le regole tra D2C, agenti, distributori e Amazon devono esistere prima del D2C hardware, altrimenti la rete fa resistenza (rischio 03/08).</li>
+</ol>
+<hr />
+<h2>7. Raccolta dati: KPI e richieste</h2>
+<p><img alt="Timeline" src="Report/img/07_timeline.png" /></p>
+<table>
+<thead>
+<tr>
+<th>Livello</th>
+<th>N. KPI</th>
+<th>Esempi</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>L1 Business</strong></td>
+<td>18</td>
+<td>Ricavi e margine per canale, costo totale Amazon, crescita per paese, win rate OEM, LTV filtri, CAC D2C</td>
+</tr>
+<tr>
+<td><strong>L2 Servizio</strong></td>
+<td>11</td>
+<td>OTIF, resi, sell-out, ticket/1000 unità, tempi di risposta, motivi di contatto, rating</td>
+</tr>
+<tr>
+<td><strong>L3 Operativo</strong></td>
+<td>20</td>
+<td>Traffico, funnel, ACoS/TACoS, pipeline OEM, ore manuali, qualità del dato, time-to-market</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Richieste per sistema (export diretti):</strong>
+- <strong>JGalileo</strong>: righe fattura e note di credito 2023→oggi con canale, paese, agente, SKU e costo; anagrafica clienti con tipologia (flag OEM); ordini con date richiesta/evasione; provvigioni agenti.
+- <strong>HubSpot</strong>: contatti con consenso, fonte e lifecycle; oggetti Companies, Deals e Tickets; licenza e utenti.
+- <strong>WooCommerce</strong>: ordini 2023→oggi con id cliente stabile; carrelli abbandonati.
+- <strong>Seller/Vendor Central</strong>: Business Report per ASIN e marketplace; settlement 2025; Retail Analytics Vendor; resi e Voice of the Customer.
+- <strong>Amazon Ads</strong>: campagne SP/SB/SD per mese e marketplace 2025→oggi.</p>
+<p><strong>Domande di discovery (sistema ignoto):</strong>
+- strumento del customer service ed export della casella;
+- analytics (GA4?) e Search Console;
+- registro delle opportunità OEM;
+- sell-out dai retailer o da panel;
+- trade spend;
+- costo landed per SKU e conto economico per canale;
+- piano triennale con i target;
+- timeline dei lanci recenti (PFAS).</p>
+<p><strong>File:</strong>
+- <code>Data_Request_LAica.xlsx</code>: un foglio per referente, con stato e colonne da compilare;
+- <code>KPI_Tree.md</code>: albero causale e copertura del Bow Tie;
+- <code>Agenda_Data_Discovery.md</code>: domande per persona e 9 conflitti da chiarire al kick-off.</p>
+<p><strong>Allineamento WBS:</strong> tutto viene raccolto nella fase <strong>1.1 Kick-off e analisi preliminare</strong> (3 gg di back office). Ogni KPI ha la sua fase di utilizzo: 1.2 Revenue Model, 1.3 ICP/Journey, 1.4 Process, 1.6 Tech/Data, 1.7 Data model.</p>
+<hr />
+<p><em>Appendice: <code>Transcript/</code> (3 call interne integrali), <code>_sources/drive/</code> (21 documenti), <code>_sources/web/web_research.md</code> (circa 80 fatti con URL), <code>Registro_Affermazioni.md</code> (58 affermazioni).</em></p></body></html>
